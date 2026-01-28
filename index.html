@@ -13,7 +13,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Prosperity Pact™ - Where Integrity, Intuition, and Money Coexist</title>
+    <title>Lau Brizuela - Spiritual Business & Rebel Manifestation Mentor</title>
+    <meta name="description" content="For 17+ years, I've guided spiritual entrepreneurs to dissolve invisible blocks, grow sustainable businesses, and step into prosperity with integrity. Born in Mexico, rooted in Italy. Another way is possible.">
+    <link rel="icon" type="image/png" href="about-image.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Berkshire+Swash&display=swap" rel="stylesheet">
@@ -356,10 +358,16 @@
 
         .quiz-features {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            grid-template-columns: repeat(2, 1fr);
             gap: 30px;
             margin: 40px 0;
             text-align: left;
+        }
+
+        @media (max-width: 768px) {
+            .quiz-features {
+                grid-template-columns: 1fr;
+            }
         }
 
         .quiz-feature {
@@ -425,14 +433,17 @@
 
         .offers-grid {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 25px;
+            grid-template-columns: 1fr;
+            gap: 40px;
             margin-top: 50px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
         }
 
         @media (max-width: 1200px) {
             .offers-grid {
-                grid-template-columns: repeat(2, 1fr);
+                grid-template-columns: 1fr;
             }
         }
 
@@ -638,18 +649,14 @@
 
         .about-image {
             width: 100%;
-            max-width: 400px;
+            max-width: 250px;
             border-radius: 15px;
             margin: 0 auto;
             display: block;
         }
 
         .section-decoration {
-            width: 100px;
-            height: 4px;
-            background: linear-gradient(90deg, #c1ff72 0%, #f42ba6 50%, #2ac4bb 100%);
-            margin: 20px auto;
-            border-radius: 2px;
+            display: none;
         }
 
         /* Turquoise buttons for white backgrounds */
@@ -793,8 +800,6 @@
         <div class="container">
             <h2>Who I Am</h2>
             
-            <img src="about-image.png" alt="Lau Brizuela - Spiritual Business Mentor" class="about-image" style="margin-bottom: 40px;">
-            
             <div class="about-content">
                 <div class="about-grid">
                     <div class="about-text">
@@ -803,6 +808,7 @@
                         <p>I've been where you are: building a business while trying to honor your values, feeling the money guilt, wondering if <strong class="highlight">integrity and income can coexist</strong>. They can. I'm proof. I work with <strong>spiritual entrepreneurs 40+</strong> who refuse to compromise their magic for money, who want <strong class="highlight-lime">abundant lives</strong> without high-pressure tactics, and who believe <strong class="highlight-lime">another way is possible</strong>.</p>
                     </div>
                     <div class="about-highlights">
+                        <img src="about-image.png" alt="Lau Brizuela - Spiritual Business Mentor" class="about-image" style="margin-bottom: 30px;">
                         <h3>My Approach</h3>
                         <ul>
                             <li>Heart-guided strategy over hustle tactics</li>
