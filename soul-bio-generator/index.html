@@ -76,11 +76,10 @@ Respond ONLY in this exact JSON:
 {"variants":[{"label":"Identity-led","bio":"...","angle":"..."},{"label":"Belief-led","bio":"...","angle":"..."},{"label":"Contrarian voice","bio":"...","angle":"..."}]}`;
 
                 try {
-                    const res = await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,messages:[{role:'user',content:prompt}]})});
+                    const res = await fetch('/.netlify/functions/generate-bio',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt})});
                     clearInterval(iv);
                     const data = await res.json();
-                    const raw = data.content.map(i=>i.text||'').join('').replace(/```json|```/g,'').trim();
-                    setResults(JSON.parse(raw).variants);
+                    setResults(data.variants);
                     goTo('results');
                 } catch(e) { clearInterval(iv); setError('Something went wrong. Try again.'); goTo('q4'); }
             };
