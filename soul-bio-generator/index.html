@@ -94,13 +94,13 @@ Under 150 characters each. Read everything twice before writing a single word.`;
                     const res = await fetch('/.netlify/functions/claude-proxy',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt})});
                     clearInterval(iv);
                     const data = await res.json();
-                    if (data.error) throw new Error(data.error);
+                    if (data.error) throw new Error('This tool runs on Claude + Lau\'s wisdom. The second never fails, but Claude gets overwhelmed sometimes. Give it a minute and try again.');
                     if (!data.text) throw new Error('Empty response from server');
                     const lines = data.text.trim().split('\n').filter(l=>l.trim()).slice(0,3);
                     const variants = lines.map((bio,i)=>({label:'Option '+(i+1), bio: bio.trim(), angle:''}));
                     setResults(variants);
                     goTo('results');
-                } catch(e) { clearInterval(iv); setScreen('q4'); setError('Something went wrong: ' + e.message + '. Check that the proxy function is deployed and try again.'); }
+                } catch(e) { clearInterval(iv); setScreen('q4'); setError('This tool runs on Claude + Lau\'s wisdom. The second never fails, but Claude gets overwhelmed sometimes. Give it a minute and try again.'); }
             };
 
             const copy = (text, i) => { navigator.clipboard.writeText(text).then(()=>{ setCopiedIdx(i); setTimeout(()=>setCopiedIdx(null),2000); }); };
