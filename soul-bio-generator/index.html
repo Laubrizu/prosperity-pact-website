@@ -40,8 +40,6 @@
             const [error, setError] = useState('');
             const [loadingMsg, setLoadingMsg] = useState('Reading between the lines...');
             const [copiedIdx, setCopiedIdx] = useState(null);
-            const [attempts, setAttempts] = useState(0);
-            const [allResults, setAllResults] = useState([]);
 
             const msgs = ['Reading between the lines...','Finding the real you in there...','Translating human into bio...','Almost there...'];
             const progressMap = { intro:0, q1:15, q2:35, q3:55, q4:75, loading:90, results:100 };
@@ -96,12 +94,11 @@ Under 150 characters each. Read everything twice before writing a single word.`;
                     const res = await fetch('/.netlify/functions/claude-proxy',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt})});
                     clearInterval(iv);
                     const data = await res.json();
+                    if (data.error) throw new Error(data.error);
+                    if (!data.text) throw new Error('Empty response from server');
                     const lines = data.text.trim().split('\n').filter(l=>l.trim()).slice(0,3);
-                    const newVariants = lines.map((bio,i)=>({label:'Option '+(allResults.length+i+1), bio: bio.trim(), angle:''}));
-                    const newAttempt = attempts + 1;
-                    setAttempts(newAttempt);
-                    setAllResults(prev => [...prev, ...newVariants]);
-                    setResults(newVariants);
+                    const variants = lines.map((bio,i)=>({label:'Option '+(i+1), bio: bio.trim(), angle:''}));
+                    setResults(variants);
                     goTo('results');
                 } catch(e) { clearInterval(iv); setScreen('q4'); setError('Something went wrong: ' + e.message + '. Check that the proxy function is deployed and try again.'); }
             };
@@ -307,7 +304,7 @@ Under 150 characters each. Read everything twice before writing a single word.`;
                             <p className="text-gray-400 text-sm">Three versions, three angles. Copy the one that hits closest, then tweak until it's perfectly yours.</p>
                         </div>
                         <div className="space-y-4 mb-6">
-                            {allResults.map((v,i)=>(
+                            {results.map((v,i)=>(
                                 <div key={i} className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl p-6 border border-gray-700 hover:border-gray-500 transition-all">
                                     <div className="flex items-start justify-between mb-3">
                                         <p className="text-xs font-semibold tracking-widest uppercase" style={{color:'#2cb8b0'}}>{v.label}</p>
