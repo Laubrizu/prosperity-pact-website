@@ -440,6 +440,59 @@
     margin-top: 16px;
     line-height: 1.5;
   }
+
+  /* ── RESPONSIVE ── */
+  @media (min-width: 768px) {
+    .wrapper {
+      max-width: 680px;
+      padding: 0 40px 100px;
+    }
+    header { padding: 32px 0 0; }
+    .logo { font-size: 22px; }
+    .hero { padding: 72px 0 48px; }
+    .hero h1 { font-size: 52px; }
+    .hero p { font-size: 17px; }
+    .card { padding: 32px 36px; }
+    .question-text { font-size: 26px; }
+    .question-hint { font-size: 14px; }
+    textarea, input[type="text"] { font-size: 16px; padding: 16px 18px; }
+    .btn { font-size: 16px; padding: 16px 36px; }
+    .bio-variant { padding: 26px 28px; }
+    .variant-text { font-size: 17px; }
+  }
+
+  @media (min-width: 1024px) {
+    .wrapper {
+      max-width: 780px;
+      padding: 0 60px 120px;
+    }
+    .hero { padding: 88px 0 56px; }
+    .hero h1 { font-size: 62px; }
+    .hero p { font-size: 18px; max-width: 560px; }
+    .card { padding: 36px 40px; }
+    .question-text { font-size: 28px; }
+    .btn-primary { max-width: 460px; margin: 0 auto; }
+    .btn-row { align-items: center; }
+  }
+
+  @media (min-width: 1280px) {
+    .wrapper { max-width: 860px; }
+    .hero h1 { font-size: 68px; }
+  }
+
+  @media (max-width: 480px) {
+    .wrapper { padding: 0 16px 60px; }
+    .hero { padding: 40px 0 28px; }
+    .hero h1 { font-size: 36px; }
+    .hero p { font-size: 14px; }
+    .card { padding: 20px; }
+    .question-text { font-size: 19px; }
+    .words-row { flex-direction: column; gap: 8px; }
+    .copy-btn { position: static; margin-top: 12px; width: 100%; text-align: center; }
+    .btn { font-size: 14px; padding: 14px 24px; }
+    .logo { font-size: 16px; }
+  }
+
 </style>
 </head>
 <body>
