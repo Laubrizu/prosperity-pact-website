@@ -76,10 +76,11 @@ Respond ONLY in this exact JSON:
 {"variants":[{"label":"Identity-led","bio":"...","angle":"..."},{"label":"Belief-led","bio":"...","angle":"..."},{"label":"Contrarian voice","bio":"...","angle":"..."}]}`;
 
                 try {
-                    const res = await fetch('/.netlify/functions/generate-bio',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt})});
+                    const res = await fetch('/.netlify/functions/claude-proxy',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt})});
                     clearInterval(iv);
                     const data = await res.json();
-                    setResults(data.variants);
+                    const raw = data.text.replace(/```json|```/g,'').trim();
+                    setResults(JSON.parse(raw).variants);
                     goTo('results');
                 } catch(e) { clearInterval(iv); setError('Something went wrong. Try again.'); goTo('q4'); }
             };
