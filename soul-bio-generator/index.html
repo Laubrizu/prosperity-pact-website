@@ -52,37 +52,55 @@
                 let idx = 0;
                 const iv = setInterval(() => { idx=(idx+1)%msgs.length; setLoadingMsg(msgs[idx]); }, 2200);
                 const mw = [word1,word2,word3].filter(Boolean).join(', ');
-                const prompt = `You are a professional copywriter for heart-led creators, soul-driven mentors, and healers. Warm, direct, a little irreverent, never corporate.
+                const prompt = `You write bios for healers, coaches, and heart-led people.
+Your job: mine their answers for language that already exists and turn it into 3 bios under 150 characters.
 
-Write 3 distinct bio options. Each must be 150 characters or fewer. Sound like a real human said it.
+HOW TO READ THEIR ANSWERS:
+Start with "How people describe them." This is the most valuable input.
+If they shared real quotes or testimonials, treat those as raw material, pull the exact phrases people used to describe this person.
+Then read the rest for beliefs, contrasts, and voice.
 
-RULES:
-- No "I help X to Y without Z" formula. Ever.
-- No credential-listing.
-- Show identity, philosophy, or worldview.
-- Conversational, like a dinner table intro.
-- Three angles: identity-led, belief-led, contrarian voice.
-- Strictly under 150 characters each.
+THE BEST BIO IS ALREADY IN THEIR WORDS. Find it, don't invent it.
+
+STRUCTURE THAT WORKS:
+A good bio has three moving parts, in any order:
+1. Who this person is (their identity, not their credentials)
+2. Who finds them (the soul client's recognizable reality, a moment they'd read and think "that's me")
+3. What changes (specific, not generic: soul clients who are happy to pay them well, weirdness becoming magnetic, charging without guilt, another way existing)
+
+WHAT KILLS A BIO:
+- "I help X do Y without Z"
+- Stacking titles or credentials
+- Generic spiritual words: empower, transform, journey, aligned, abundant, conscious, thriving
+- Copywriting templates of any kind
+- Vague promises with no feeling behind them
+- Em dashes (use commas or periods instead)
+
+MAGNETIC WORDS:
+If provided, include at least 2 of them naturally in the bio, as if they were always part of the sentence. Never forced, never listed.
 
 INPUTS:
+Current bio: ${currentBio||'Not provided'}
 Who they help and what changes: ${q1}
-How people describe them: ${q2||'Not provided'}
-What they reject and believe instead: ${q3||'Not provided'}
-What they actually do (their words): ${q4}
-${mw?'Three Magnetic Words: '+mw:''}
-${currentBio?'Current bio (do NOT copy): '+currentBio:''}
+How people describe them (read this first and mine it carefully): ${q2||'Not provided'}
+What they reject and believe: ${q3||'Not provided'}
+What they actually do in their own words: ${q4}
+${mw?'Magnetic words (include at least 2): '+mw:''}
 
-Respond ONLY in this exact JSON:
-{"variants":[{"label":"Identity-led","bio":"...","angle":"..."},{"label":"Belief-led","bio":"...","angle":"..."},{"label":"Contrarian voice","bio":"...","angle":"..."}]}`;
+Write exactly 3 bios. One per line. No labels, no numbering, no explanations.
+Under 150 characters each. Read everything twice before writing a single word.`;
 
                 try {
                     const res = await fetch('/.netlify/functions/claude-proxy',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt})});
                     clearInterval(iv);
                     const data = await res.json();
-                    const raw = data.text.replace(/```json|```/g,'').trim();
-                    setResults(JSON.parse(raw).variants);
+                    if (data.error) throw new Error('This tool runs on Claude + Lau\'s wisdom. The second never fails, but Claude gets overwhelmed sometimes. Give it a minute and try again.');
+                    if (!data.text) throw new Error('Empty response from server');
+                    const lines = data.text.trim().split('\n').filter(l=>l.trim()).slice(0,3);
+                    const variants = lines.map((bio,i)=>({label:'Option '+(i+1), bio: bio.trim(), angle:''}));
+                    setResults(variants);
                     goTo('results');
-                } catch(e) { clearInterval(iv); setError('Something went wrong. Try again.'); goTo('q4'); }
+                } catch(e) { clearInterval(iv); setScreen('q4'); setError('This tool runs on Claude + Lau\'s wisdom. The second never fails, but Claude gets overwhelmed sometimes. Give it a minute and try again.'); }
             };
 
             const copy = (text, i) => { navigator.clipboard.writeText(text).then(()=>{ setCopiedIdx(i); setTimeout(()=>setCopiedIdx(null),2000); }); };
@@ -310,7 +328,7 @@ Respond ONLY in this exact JSON:
                             <p className="text-gray-400 text-sm">Your bio is just the beginning. Next we'll find 2-3 colors that match your energy and make you instantly recognizable.</p>
                         </div>
                         <div className="text-center mb-6">
-                            <button onClick={()=>{setScreen('intro');setResults(null);setQ1('');setQ2('');setQ3('');setQ4('');setCurrentBio('');setWord1('');setWord2('');setWord3('');}}
+                            <button onClick={()=>{setScreen('intro');setResults(null);setAllResults([]);setAttempts(0);setQ1('');setQ2('');setQ3('');setQ4('');setCurrentBio('');setWord1('');setWord2('');setWord3('');setError('');}}
                                 className="px-8 py-3 rounded-full font-bold text-black transition-all hover:scale-105" style={{backgroundColor:'#2cb8b0'}}>
                                 Start over with a new bio
                             </button>
