@@ -1,0 +1,1142 @@
+<!DOCTYPE html>
+<html lang="en">
+<!--
+    PROSPERITY PACT WEBSITE
+    
+    IMAGES INCLUDED:
+    ✓ about-image.png (800x800px) - About section photo
+    ✓ mandala-1.png (300x300px PNG) - After About section
+    ✓ mandala-2.png (300x300px PNG) - Before Quiz section
+    
+    READY TO DEPLOY!
+-->
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prosperity Pact™ - Where Integrity, Intuition, and Money Coexist</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Berkshire+Swash&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            line-height: 1.6;
+            color: #2a2a2a;
+            padding-top: 80px; /* Space for fixed nav */
+        }
+
+        /* Sticky Navigation */
+        .main-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            padding: 20px 0;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .nav-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #c1ff72 0%, #2ac4bb 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: #ffffff;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: #c1ff72;
+        }
+
+        .mobile-menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: #c1ff72;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                background: rgba(0, 0, 0, 0.98);
+                flex-direction: column;
+                padding: 20px;
+                gap: 20px;
+            }
+
+            .nav-links.active {
+                display: flex;
+            }
+
+            .mobile-menu-toggle {
+                display: block;
+            }
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%);
+            padding: 100px 20px;
+            text-align: center;
+            color: #ffffff;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 20% 50%, rgba(193, 255, 114, 0.1) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 80%, rgba(42, 196, 187, 0.1) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        .hero .container {
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            line-height: 1.2;
+        }
+
+        .hero .subtitle {
+            font-size: 1.5rem;
+            margin-bottom: 40px;
+            opacity: 0.9;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            max-width: 800px;
+            margin: 0 auto 40px;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: #c1ff72;
+            color: #000000;
+            padding: 18px 40px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-size: 1.2rem;
+            font-weight: 600;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 15px rgba(193, 255, 114, 0.3);
+        }
+
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(193, 255, 114, 0.5);
+            background: #d4ff8f;
+        }
+
+        .cta-secondary {
+            background: transparent;
+            color: #c1ff72;
+            border: 2px solid #c1ff72;
+            margin-left: 15px;
+        }
+
+        .cta-secondary:hover {
+            background: rgba(193, 255, 114, 0.1);
+        }
+
+        /* Section Styles */
+        section {
+            padding: 80px 20px;
+        }
+
+        section h2 {
+            font-size: 2.5rem;
+            text-align: center;
+            margin-bottom: 50px;
+            color: #1a1a1a;
+            background: linear-gradient(135deg, #f42ba6 0%, #2ac4bb 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 700;
+        }
+
+        /* Highlighted text - bold important words */
+        .highlight {
+            color: #f42ba6;
+            font-weight: 700;
+        }
+
+        .highlight-lime {
+            color: #c1ff72;
+            font-weight: 700;
+        }
+
+        .highlight-turquoise {
+            color: #2ac4bb;
+            font-weight: 700;
+        }
+
+        .section-intro {
+            text-align: center;
+            font-size: 1.2rem;
+            max-width: 800px;
+            margin: 0 auto 60px;
+            color: #4a4a4a;
+        }
+
+        /* Problems Section */
+        .problems {
+            background: linear-gradient(180deg, #ffffff 0%, #f8f8f8 100%);
+        }
+
+        .problems-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .problem-card {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            border-left: 4px solid #f42ba6;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .problem-card h3 {
+            color: #f42ba6;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+
+        /* Love Circle Method */
+        .love-circle {
+            background: #ffffff;
+        }
+
+        .love-circle h2 {
+            color: #000000;
+        }
+
+        .pillars {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 30px;
+            margin-top: 50px;
+        }
+
+        .pillar:nth-child(5) {
+            grid-column: 1 / -1;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .spiritual-foundations {
+            background: #f42ba6;
+            color: #ffffff;
+            padding: 40px;
+            border-radius: 20px;
+            margin-top: 60px;
+            text-align: center;
+        }
+
+        .spiritual-foundations h3 {
+            color: #ffffff;
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+        }
+
+        .spiritual-foundations p {
+            font-size: 1.2rem;
+            line-height: 1.8;
+        }
+
+        @media (max-width: 968px) {
+            .pillars {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .pillar:nth-child(5) {
+                grid-column: 1 / -1;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .pillars {
+                grid-template-columns: 1fr;
+            }
+            
+            .pillar:nth-child(5) {
+                grid-column: 1;
+            }
+        }
+
+        .pillar {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            border-top: 3px solid transparent;
+            background-image: linear-gradient(white, white), 
+                            linear-gradient(135deg, #c1ff72 0%, #f42ba6 50%, #2ac4bb 100%);
+            background-origin: border-box;
+            background-clip: padding-box, border-box;
+        }
+
+        .pillar-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+        }
+
+        .pillar h3 {
+            color: #f42ba6;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+
+        /* Quiz Section */
+        .quiz-section {
+            background: #fff;
+            text-align: center;
+        }
+
+        .quiz-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .quiz-features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 30px;
+            margin: 40px 0;
+            text-align: left;
+        }
+
+        .quiz-feature {
+            padding: 20px;
+        }
+
+        .quiz-feature h4 {
+            color: #2ac4bb;
+            margin-bottom: 10px;
+        }
+
+        /* Offers Section */
+        .offers {
+            background: linear-gradient(180deg, #f8f8f8 0%, #ffffff 100%);
+        }
+
+        /* Testimonials Section */
+        .testimonials {
+            background: linear-gradient(135deg, rgba(193, 255, 114, 0.05) 0%, rgba(42, 196, 187, 0.05) 100%);
+            padding: 80px 20px;
+        }
+
+        .testimonials h2 {
+            background: linear-gradient(135deg, #c1ff72 0%, #2ac4bb 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .testimonials-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 40px;
+            margin-top: 50px;
+        }
+
+        .testimonial-card {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            position: relative;
+            border-top: 3px solid #f42ba6;
+        }
+
+        .testimonial-quote {
+            font-size: 1.1rem;
+            font-style: italic;
+            margin-bottom: 20px;
+            line-height: 1.8;
+            color: #2a2a2a;
+        }
+
+        .testimonial-author {
+            font-weight: 600;
+            color: #f42ba6;
+        }
+
+        .testimonial-role {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .offers-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 25px;
+            margin-top: 50px;
+        }
+
+        @media (max-width: 1200px) {
+            .offers-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .offers-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .offer-card {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            text-align: center;
+            border-top: 5px solid #c1ff72;
+        }
+
+        .offer-card.featured {
+            border-top-color: #f42ba6;
+            transform: scale(1.02);
+        }
+
+        .offer-card h3 {
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+            color: #1a1a1a;
+        }
+
+        .offer-card .prosperity-pact-title {
+            font-family: 'Berkshire Swash', cursive;
+            font-size: 2.2rem;
+            background: linear-gradient(135deg, #c1ff72 0%, #f42ba6 50%, #2ac4bb 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 15px;
+            line-height: 1.3;
+        }
+
+        .offer-card .price {
+            font-size: 2rem;
+            color: #f42ba6;
+            font-weight: 700;
+            margin: 20px 0;
+        }
+
+        .offer-card ul {
+            text-align: left;
+            list-style: none;
+            margin: 30px 0;
+        }
+
+        .offer-card li {
+            padding: 10px 0;
+            padding-left: 25px;
+            position: relative;
+        }
+
+        .offer-card li:before {
+            content: "✨";
+            position: absolute;
+            left: 0;
+        }
+
+        .offer-badge {
+            display: inline-block;
+            background: #c1ff72;
+            color: #1a1a1a;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        /* Ethics Section */
+        .ethics {
+            background: #1a1a1a;
+            color: white;
+            text-align: center;
+        }
+
+        .ethics h2 {
+            color: #d4ff00;
+        }
+
+        /* About Section */
+        .about {
+            background: #000000;
+            color: #ffffff;
+            padding: 80px 20px;
+        }
+
+        .about h2 {
+            color: #ffffff;
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .about-content {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .about-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 50px;
+            margin-top: 40px;
+        }
+
+        .about-text {
+            font-size: 1.1rem;
+            line-height: 1.8;
+        }
+
+        .about-text p {
+            margin-bottom: 20px;
+        }
+
+        .about-highlights {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 30px;
+            border-radius: 15px;
+            border-left: 4px solid #f42ba6;
+        }
+
+        .about-highlights h3 {
+            color: #f42ba6;
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+        }
+
+        .about-highlights ul {
+            list-style: none;
+        }
+
+        .about-highlights li {
+            padding: 10px 0;
+            padding-left: 25px;
+            position: relative;
+        }
+
+        .about-highlights li:before {
+            content: "✨";
+            position: absolute;
+            left: 0;
+        }
+
+        @media (max-width: 768px) {
+            .about-grid {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+        }
+
+        /* Ethics Section */
+        .ethics {
+            background: #1a1a1a;
+            color: white;
+            text-align: center;
+        }
+
+        .ethics h2 {
+            color: #c1ff72;
+        }
+
+        .ethics-content {
+            max-width: 800px;
+            margin: 0 auto;
+            font-size: 1.2rem;
+            line-height: 1.8;
+        }
+
+        .ethics-highlight {
+            background: #f42ba6;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 30px 0;
+            border-left: none;
+        }
+
+        .ethics-highlight p {
+            color: #ffffff;
+        }
+
+        /* Footer */
+        footer {
+            background: #0a0a0a;
+            color: #fff;
+            padding: 40px 20px;
+            text-align: center;
+        }
+
+        /* Image Styles - for when you add images */
+        .hero-image {
+            max-width: 600px;
+            margin: 40px auto;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(193, 255, 114, 0.2);
+        }
+
+        .about-image {
+            width: 100%;
+            max-width: 400px;
+            border-radius: 15px;
+            margin: 0 auto;
+            display: block;
+        }
+
+        .section-decoration {
+            width: 100px;
+            height: 4px;
+            background: linear-gradient(90deg, #c1ff72 0%, #f42ba6 50%, #2ac4bb 100%);
+            margin: 20px auto;
+            border-radius: 2px;
+        }
+
+        /* Turquoise buttons for white backgrounds */
+        .quiz-section .cta-button,
+        .offers .cta-button {
+            background: #2ac4bb;
+            color: #000000;
+            box-shadow: 0 4px 15px rgba(42, 196, 187, 0.3);
+        }
+
+        .quiz-section .cta-button:hover,
+        .offers .cta-button:hover {
+            background: #4dd4cb;
+            box-shadow: 0 6px 20px rgba(42, 196, 187, 0.5);
+        }
+
+        /* Mandala decorations - Add your own mandala images here */
+        .mandala-container {
+            width: 150px;
+            height: 150px;
+            margin: 40px auto;
+            position: relative;
+        }
+
+        .mandala-image {
+            width: 100%;
+            height: auto;
+            opacity: 0.3;
+        }
+
+        /* Footer */
+        footer {
+            background: #0a0a0a;
+            color: #fff;
+            padding: 40px 20px;
+            text-align: center;
+        }
+
+        footer p {
+            margin: 10px 0;
+        }
+
+        .footer-tagline {
+            color: #c1ff72;
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+        }
+
+        .footer-legal {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 0.85rem;
+            opacity: 0.7;
+        }
+
+        .footer-legal-links {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-top: 15px;
+        }
+
+        .footer-legal-links span {
+            color: #c1ff72;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .hero .subtitle {
+                font-size: 1.2rem;
+            }
+
+            section h2 {
+                font-size: 2rem;
+            }
+
+            .cta-secondary {
+                margin-left: 0;
+                margin-top: 15px;
+                display: block;
+            }
+
+            .about-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .offer-card.featured {
+                transform: scale(1);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sticky Navigation -->
+    <nav class="main-nav">
+        <div class="nav-content">
+            <div class="nav-logo">Lau Brizuela</div>
+            <button class="mobile-menu-toggle" onclick="toggleMenu()">☰</button>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="#about">About</a></li>
+                <li><a href="#method">The Method</a></li>
+                <li><a href="#quiz">Soul Client Quiz</a></li>
+                <li><a href="#offers">Work With Me</a></li>
+                <li><a href="#testimonials">Testimonials</a></li>
+                <li><a href="https://www.skool.com/prosperity-pact" style="color: #c1ff72;">Join Community</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <h1>Integrity, Intuition, and Money<br>Can Coexist</h1>
+            <p class="subtitle">Where spiritual entrepreneurs learn to attract <strong>soul clients</strong>, charge <strong>without guilt</strong>, and live <strong>abundantly</strong></p>
+            <p>You're a healer, intuitive, energy worker doing <strong>real transformative work</strong>. But you struggle with money guilt, explaining your intangible services, and charging what your work is worth. You want an abundant, comfortable life <strong>without selling your soul</strong> or manipulating people.</p>
+            <p><strong class="highlight-lime">Another way is possible. 💜</strong></p>
+            
+            <!-- IMAGE SUGGESTION: Add a photo here that shows:
+                 - You working with a client (intimate, warm)
+                 - You in nature (aligned with countryside dreamer archetype)
+                 - A mandala or sacred geometry that represents Prosperity Pact
+                 Example: <img src="your-image.jpg" alt="Lau Brizuela" class="hero-image"> -->
+            
+            <div class="section-decoration"></div>
+            
+            <div style="margin-top: 40px;">
+                <a href="https://www.skool.com/prosperity-pact" class="cta-button">Join Prosperity Pact™</a>
+                <a href="https://prosperity.laubrizuela.com" class="cta-button cta-secondary">Take the Soul-Aligned Business Quiz</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section class="about" id="about">
+        <div class="container">
+            <h2>Who I Am</h2>
+            
+            <img src="about-image.png" alt="Lau Brizuela - Spiritual Business Mentor" class="about-image" style="margin-bottom: 40px;">
+            
+            <div class="about-content">
+                <div class="about-grid">
+                    <div class="about-text">
+                        <p>I'm <strong class="highlight">Lau Brizuela</strong>, a <strong>Spiritual Business & Rebel Manifestation Mentor</strong>, deeply intuitive and spiritually connected. For over <strong>17 years</strong> I've been guiding women across countries and cultures to dissolve invisible blocks, grow and sustain their business, and step into prosperity with rebel fire and compassion.</p>
+                        <p>Born in <strong class="highlight-turquoise">Mexico</strong> and now rooted in <strong class="highlight-turquoise">Italy</strong>, I carry the fire of my heritage and the ancestral wisdom of this land. All my work is done hand-in-hand with spiritual guides, connecting with my higher self to decide and serve.</p>
+                        <p>I've been where you are: building a business while trying to honor your values, feeling the money guilt, wondering if <strong class="highlight">integrity and income can coexist</strong>. They can. I'm proof. I work with <strong>spiritual entrepreneurs 40+</strong> who refuse to compromise their magic for money, who want <strong class="highlight-lime">abundant lives</strong> without high-pressure tactics, and who believe <strong class="highlight-lime">another way is possible</strong>.</p>
+                    </div>
+                    <div class="about-highlights">
+                        <h3>My Approach</h3>
+                        <ul>
+                            <li>Heart-guided strategy over hustle tactics</li>
+                            <li>Sales and offer creation led by intuition</li>
+                            <li>Deeply connected to spiritual guides and higher self</li>
+                            <li>Rebellion against traditional business dogma</li>
+                            <li>Pricing based on lives served, not perceived worth</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Mandala Decoration -->
+    <div class="mandala-container">
+        <img src="mandala-1.png" alt="Mandala decoration" class="mandala-image">
+    </div>
+
+    <!-- Problems Section -->
+    <section class="problems">
+        <div class="container">
+            <h2>Why Spiritual Entrepreneurs Struggle</h2>
+            <p class="section-intro"><strong class="highlight">Real transformative work deserves sustainable abundance.</strong> But these challenges keep you stuck:</p>
+            
+            <div class="problems-grid">
+                <div class="problem-card">
+                    <h3>Money Guilt</h3>
+                    <p>You feel <strong>guilty charging</strong> for spiritual work and <strong>conflicted about receiving money</strong>. Every price conversation feels like betrayal.</p>
+                </div>
+
+                <div class="problem-card">
+                    <h3>Undercharging</h3>
+                    <p>You charge <strong>too little</strong>, leading to unsustainable business. You <strong>can't live off your work</strong> even though you're transforming lives.</p>
+                </div>
+
+                <div class="problem-card">
+                    <h3>Articulation Challenges</h3>
+                    <p>You struggle to <strong>communicate the benefits and value</strong> of your transformative work. How do you <strong>explain the intangible?</strong></p>
+                </div>
+
+                <div class="problem-card">
+                    <h3>Hate Aggressive Tactics</h3>
+                    <p>You despise <strong>high-pressure sales funnels</strong> and <strong>manipulative marketing</strong>. Traditional strategies feel fake and misaligned.</p>
+                </div>
+
+                <div class="problem-card">
+                    <h3>Social Media Conflicts</h3>
+                    <p>You <strong>hate social media</strong> but feel forced to be present online. The <strong>constant posting drains your energy</strong>.</p>
+                </div>
+
+                <div class="problem-card">
+                    <h3>Inauthentic Marketing</h3>
+                    <p>Traditional marketing feels <strong>fake, manipulative</strong>, and completely <strong>misaligned</strong> with who you are and what you value.</p>
+                </div>
+
+                <div class="problem-card">
+                    <h3>Intangible Services</h3>
+                    <p>Your work—<strong>healing, energy work, intuitive coaching</strong>—is difficult to explain and quantify. People don't "get it" until they <strong>experience it</strong>.</p>
+                </div>
+
+                <div class="problem-card">
+                    <h3>Cannot Sustain Themselves</h3>
+                    <p>Despite doing <strong class="highlight">real transformative work</strong>, you cannot live off your business. The numbers just <strong>don't add up</strong>.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Solution: Love Circle Method -->
+    <section class="love-circle" id="method">
+        <div class="container">
+            <h2>The Love Circle Method</h2>
+            <p class="section-intro">A 5-pillar framework that helps you build a business rooted in love, aligned with your values, and designed for sustainable abundance.</p>
+            
+            <div class="section-decoration"></div>
+            
+            <div class="pillars">
+                <div class="pillar">
+                    <div class="pillar-icon">💜</div>
+                    <h3>Fall in Love with Yourself</h3>
+                    <p>Your authentic self attracts soul clients. When you brand from the soul, your energy becomes the magnet.</p>
+                </div>
+
+                <div class="pillar">
+                    <div class="pillar-icon">👁️</div>
+                    <h3>Fall in Love with Your Vision</h3>
+                    <p>Define your real numbers using the Soul Client Calculator. Design your magic offerings. Visualize your ideal business.</p>
+                </div>
+
+                <div class="pillar">
+                    <div class="pillar-icon">✨</div>
+                    <h3>Fall in Love with Your Client</h3>
+                    <p>Figure out who your soul client is and how to talk to them in their language. Beyond demographics—these are the people you'd invite for hours of conversation.</p>
+                </div>
+
+                <div class="pillar">
+                    <div class="pillar-icon">🎁</div>
+                    <h3>Fall in Love with Your Product</h3>
+                    <p>Build offers around the transformation you create, not what you think will sell. When they understand how you'll help, "yes" becomes inevitable.</p>
+                </div>
+
+                <div class="pillar">
+                    <div class="pillar-icon">💰</div>
+                    <h3>Fall in Love with Money</h3>
+                    <p>Charge, ask for, and receive money without guilt or betraying yourself. Money is energy and a tool for impact.</p>
+                </div>
+            </div>
+
+            <div class="spiritual-foundations">
+                <h3>Plus: Spiritual Foundations</h3>
+                <p>Receivefulness Philosophy • Money Energy & Reality Creation<br>Rituals & Ceremonies • Heartset vs Mindset<br>Spiritual Guides & Divine Teachings</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Mandala Decoration -->
+    <div class="mandala-container" style="background: #ffffff; padding: 40px 0;">
+        <img src="mandala-2.png" alt="Mandala decoration" class="mandala-image">
+    </div>
+
+    <!-- Quiz Section -->
+    <section class="quiz-section" id="quiz">
+        <div class="container">
+            <div class="quiz-content">
+                <h2>What Kind of Business Can You Actually Build?</h2>
+                <p class="section-intro">Not every business model fits every person. This quiz helps you understand what kind of business aligns with your <strong>values, dreams, lifestyle, and energy</strong>—so you can <strong class="highlight">stop forcing strategies that drain you</strong>.</p>
+                
+                <div class="section-decoration"></div>
+                
+                <div class="quiz-features">
+                    <div class="quiz-feature">
+                        <h4>Based on Your Rhythm</h4>
+                        <p>Your <strong>natural cycles</strong>, energy patterns, and how you actually want to work.</p>
+                    </div>
+                    <div class="quiz-feature">
+                        <h4>Aligned with Values</h4>
+                        <p>What matters to you, what you <strong>won't compromise</strong>, and what integrity looks like for you.</p>
+                    </div>
+                    <div class="quiz-feature">
+                        <h4>Honors Your Dreams</h4>
+                        <p>Where you want to live, how you want to serve, what <strong>freedom means to you</strong>.</p>
+                    </div>
+                    <div class="quiz-feature">
+                        <h4>Fits Your Life</h4>
+                        <p>Your <strong>actual circumstances</strong>, responsibilities, and the life you're building.</p>
+                    </div>
+                </div>
+
+                <p style="margin: 40px 0; font-size: 1.1rem;">The quiz gives you <strong class="highlight">clarity on the business model</strong> that won't drain you, the <strong>pricing that honors your work</strong>, and the path that actually fits who you are.</p>
+
+                <a href="https://prosperity.laubrizuela.com" class="cta-button">Take the Free Quiz</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Offers Section -->
+    <section class="offers" id="offers">
+        <div class="container">
+            <h2>Work With Me</h2>
+            
+            <div class="offers-grid">
+                <!-- Prosperity Pact Community -->
+                <div class="offer-card featured">
+                    <span class="offer-badge">MAIN SANCTUARY</span>
+                    <h3 class="prosperity-pact-title">Prosperity Pact™<br>Community</h3>
+                    <p>A slow, grounded, intelligent space for spiritual entrepreneurs who refuse to choose between their values and their vision.</p>
+                    <ul>
+                        <li><strong>The Love Circle Method</strong> teachings</li>
+                        <li><strong>Soul Client Calculator</strong></li>
+                        <li>Rituals & <strong>manifestation practices</strong></li>
+                        <li>Community of <strong>justice-minded healers</strong></li>
+                        <li><strong>No fake urgency</strong>, honor your rhythm</li>
+                        <li><strong class="highlight">Calm, honest, intimate</strong> by design</li>
+                        <li>Build at <strong>your pace</strong>, in your way</li>
+                    </ul>
+                    <a href="https://www.skool.com/prosperity-pact" class="cta-button">Join the Community</a>
+                </div>
+
+                <!-- Business Mentoring -->
+                <div class="offer-card">
+                    <span class="offer-badge">EXCLUSIVE</span>
+                    <h3>Business<br>Mentoring</h3>
+                    <p class="price">By Application</p>
+                    <p>I walk beside you, <strong>adapting to what your soul and business truly need</strong>. This is intimate, warm support—not a formula. Private <strong>1:1 or small group</strong> work for established spiritual entrepreneurs ready for transformation.</p>
+                    <ul>
+                        <li><strong>Customized strategy</strong> that fits YOU</li>
+                        <li>Deep <strong>spiritual guidance</strong> & energy work</li>
+                        <li>Pricing & <strong>positioning clarity</strong></li>
+                        <li>Offer creation with soul alignment</li>
+                        <li><strong class="highlight">Close, caring support</strong> throughout</li>
+                        <li>Fair pricing for both of us—<strong>not high-ticket</strong></li>
+                    </ul>
+                    <a href="https://tidycal.com/laubrizuela/spiritual-business-mentoring-info" class="cta-button">Book Info Call</a>
+                </div>
+
+                <!-- Annual Retreat -->
+                <div class="offer-card">
+                    <span class="offer-badge">SACRED GATHERING</span>
+                    <h3>Annual<br>Retreat</h3>
+                    <p class="price">Once per Year</p>
+                    <p>Intimate gathering in Italy, limited to <strong>8 souls</strong>. Deep <strong class="highlight">soul work</strong>, spirituality, and identity exploration in a sacred container.</p>
+                    <ul>
+                        <li><strong>5-day immersive experience</strong></li>
+                        <li>Soul work & <strong>spiritual exploration</strong></li>
+                        <li>Identity & <strong>authenticity work</strong></li>
+                        <li>Group ceremonies & rituals</li>
+                        <li><strong class="highlight-turquoise">Italian countryside setting</strong></li>
+                        <li>Limited to <strong>8 participants</strong></li>
+                        <li>Next retreat: TBA</li>
+                    </ul>
+                    <a href="https://t.me/laubrizu" class="cta-button">Express Interest</a>
+                </div>
+
+                <!-- Soul Healing Sessions -->
+                <div class="offer-card">
+                    <span class="offer-badge">PSYCHIC WORK</span>
+                    <h3>Soul Healing<br>Sessions</h3>
+                    <p class="price">By Request</p>
+                    <p>The session that <strong>bends to what your soul is asking for</strong>, not a fixed script. If you need something more energetic—<strong class="highlight">a process to cleanse your energy and dissolve blocks</strong> from the heart, not the mind—this is what you can't explain but <strong>can feel</strong>.</p>
+                    <ul>
+                        <li><strong>Past lives</strong> exploration</li>
+                        <li><strong>Akashic Records</strong> readings</li>
+                        <li><strong>Soul contracts</strong> clarity</li>
+                        <li><strong>Mediumship</strong> connections</li>
+                        <li><strong class="highlight-turquoise">Energy healing & block removal</strong></li>
+                        <li>The <strong class="highlight">channel that opens</strong> will be the one you most need now</li>
+                    </ul>
+                    <p style="margin-top: 20px; font-style: italic;"><strong>Find clarity, answers, and the next step forward.</strong></p>
+                    <a href="https://tidycal.com/laubrizuela/soul-healing-session" class="cta-button">Book Your Session</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section class="testimonials" id="testimonials">
+        <div class="container">
+            <h2>What Soul Clients Say</h2>
+            <p class="section-intro">Real transformations from real people building businesses with <strong>integrity</strong>.</p>
+            
+            <div class="testimonials-grid">
+                <!-- Testimonial 1 - Nathaniel (Proveworth) -->
+                <div class="testimonial-card">
+                    <p class="testimonial-quote">"Lau has <strong>expanded my awareness of prosperity</strong> and uses inspired tools that have made my appreciation for receiving so much deeper. She is an awesome presence, not only in Prosperity Pact™—<strong>really in Skool as a whole!</strong>"</p>
+                    <p class="testimonial-author">Nathaniel Parant</p>
+                    <p class="testimonial-role">Prosperity Pact™ Member</p>
+                </div>
+
+                <!-- Testimonial 2 - Claudio (Proveworth) -->
+                <div class="testimonial-card">
+                    <p class="testimonial-quote">"Lau is an amazing human being who <strong>genuinely cares about her people</strong>. Inside Prosperity Pact™ she is building something <strong>solid, grounded and deeply intentional</strong>. What I love most is the way she shows up daily, sharing reflections and prompts."</p>
+                    <p class="testimonial-author">Claudio Campobassi</p>
+                    <p class="testimonial-role">Prosperity Pact™ Member</p>
+                </div>
+
+                <!-- Testimonial 3 - Maria (Proveworth) -->
+                <div class="testimonial-card">
+                    <p class="testimonial-quote">"I love how Lau teaches about money and energy in a way that's <strong>clear, approachable, and never intimidating</strong>. Money is energy, and Lau helps you <strong>build a positive, empowering relationship with it</strong>. She shows you how to build a sustainable business."</p>
+                    <p class="testimonial-author">Maria Bello</p>
+                    <p class="testimonial-role">Prosperity Pact™ Member</p>
+                </div>
+
+                <!-- Testimonial 4 - From Web -->
+                <div class="testimonial-card">
+                    <p class="testimonial-quote">"Working with Lau was like <strong>taking the blindfold off</strong>. She helped me face my fears, cut useless beliefs, and find certainty in myself. Her guidance has been essential to <strong>grow my business and support the thousands of people I now serve</strong>."</p>
+                    <p class="testimonial-author">S.M.</p>
+                    <p class="testimonial-role">Healer & Business Owner</p>
+                </div>
+
+                <!-- Testimonial 5 - From Web -->
+                <div class="testimonial-card">
+                    <p class="testimonial-quote">"Since I started working with Lau, <strong>my life turned 180°</strong>. I broke old patterns, dissolved limiting paradigms, and manifested things I thought were impossible. My mental, emotional, financial and even physical wellbeing has <strong>expanded so much</strong>."</p>
+                    <p class="testimonial-author">C.R.</p>
+                    <p class="testimonial-role">Spiritual Entrepreneur</p>
+                </div>
+
+                <!-- Testimonial 6 - From Web -->
+                <div class="testimonial-card">
+                    <p class="testimonial-quote">"Lau has been my <strong>go-to guide for years</strong>, the one I call when I need to clear my mind and come back to truth. Her perspective helped me <strong>dismantle invisible barriers and remember my own power</strong>. I no longer feel blocked—I feel free, focused, and abundant."</p>
+                    <p class="testimonial-author">A.L.</p>
+                    <p class="testimonial-role">Intuitive Coach</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Ethics Section -->
+    <section class="ethics">
+        <div class="container">
+            <h2>My Ethics</h2>
+            <div class="ethics-content">
+                <div class="ethics-highlight">
+                    <p><strong>No high ticket. Ever.</strong></p>
+                    <p>I charge based on the lives I want to transform, not what I think I'm worth.</p>
+                </div>
+                
+                <p>Abundance should never require debt. Freedom should never start with financial stress.</p>
+                <p style="margin-top: 30px;">I measure success by lives changed, not by revenue. I build wealth that serves change. I refuse to perform or pretend.</p>
+                <p style="margin-top: 30px;"><strong>Real transformative work deserves sustainable abundance.</strong></p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <p class="footer-tagline">Another way is possible 💜</p>
+            <p><strong>Prosperity Pact™</strong></p>
+            <p>Integrity • Intuition • Income</p>
+            <p style="margin-top: 30px;">
+                <a href="https://www.skool.com/prosperity-pact" style="color: #c1ff72; text-decoration: none; margin: 0 15px;">Community</a>
+                <a href="https://prosperity.laubrizuela.com" style="color: #c1ff72; text-decoration: none; margin: 0 15px;">Soul Client Quiz</a>
+                <a href="/cdn-cgi/l/email-protection#6008050c0c0f200c01150212091a15050c014e030f0d" style="color: #c1ff72; text-decoration: none; margin: 0 15px;">Contact</a>
+            </p>
+            <p style="margin-top: 30px; opacity: 0.7; font-size: 0.9rem;">© 2019-2026 Lau Brizuela • Spiritual Business & Rebel Manifestation Mentor</p>
+            
+            <!-- Legal Links -->
+            <div class="footer-legal">
+                <div class="footer-legal-links">
+                    <span>Privacy Policy</span>
+                    <span>Cookie Policy</span>
+                    <span>Terms of Service</span>
+                    <span>GDPR</span>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Mobile Menu Script -->
+    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+        function toggleMenu() {
+            const navLinks = document.getElementById('navLinks');
+            navLinks.classList.toggle('active');
+        }
+
+        // Smooth scroll for navigation link

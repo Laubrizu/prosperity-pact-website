@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Money Love — Prosperity Pact</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --pk:#f42ba6;--lm:#c1ff72;--tl:#2cb8b0;
+  --bg:#000;--bg2:#0d0d0d;--bg3:#1a1a1a;--bg4:#252525;
+  --txt:#fff;--txt2:#aaa;--txt3:#555;
+}
+html{font-size:16px;scroll-behavior:smooth}
+body{font-family:'Poppins',sans-serif;background:var(--bg);color:var(--txt);min-height:100vh;-webkit-font-smoothing:antialiased}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}
+.view{display:none}.view.active{display:block}
+
+/* HOME */
+.home-glow{text-align:center;padding:3.5rem 1.5rem 1.5rem;background:radial-gradient(ellipse 80% 50% at 50% -5%,rgba(244,43,166,.13) 0%,transparent 70%)}
+.eyebrow{font-size:.62rem;letter-spacing:.35em;color:var(--tl);text-transform:uppercase;margin-bottom:.875rem}
+.home-title{font-size:clamp(2.4rem,9vw,3.2rem);font-weight:700;letter-spacing:-.02em;background:linear-gradient(135deg,var(--pk) 0%,#b060f0 45%,var(--tl) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:.5rem}
+.home-sub{color:var(--txt2);font-size:.85rem;font-weight:300;line-height:1.7;max-width:320px;margin:0 auto}
+.home-rule{width:36px;height:1px;background:linear-gradient(90deg,transparent,var(--pk),transparent);margin:1.5rem auto 0}
+
+.prog-wrap{max-width:460px;margin:2rem auto 0;padding:0 1.5rem}
+.prog-meta{display:flex;justify-content:space-between;font-size:.7rem;color:var(--txt3);margin-bottom:.55rem}
+.prog-count{color:var(--lm);font-weight:500}
+.prog-track{height:3px;background:var(--bg3);border-radius:999px;overflow:hidden}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--pk),var(--lm));border-radius:999px;transition:width .7s cubic-bezier(.4,0,.2,1)}
+
+.info-toggle-wrap{text-align:center;margin:1.25rem 0 .25rem}
+.info-toggle{background:none;border:1px solid var(--bg3);color:var(--txt3);padding:.3rem .9rem;border-radius:999px;font-size:.7rem;cursor:pointer;font-family:'Poppins',sans-serif;letter-spacing:.03em;transition:color .2s,border-color .2s}
+.info-toggle:hover{color:var(--txt2);border-color:var(--bg4)}
+
+.info-panel{max-width:460px;margin:.6rem auto 0;padding:0 1.5rem;display:none}
+.info-inner{background:var(--bg2);border:1px solid var(--bg3);border-radius:14px;padding:1.25rem 1.4rem;font-size:.8rem;color:var(--txt2);line-height:1.9}
+.info-inner strong{color:var(--txt);font-weight:500}
+.info-inner em{color:var(--tl);font-style:italic}
+
+.days-list{max-width:460px;margin:1.75rem auto 0;padding:0 1.5rem 4rem}
+.day-card{margin-bottom:.65rem;padding:1rem 1.1rem;border-radius:14px;border:1px solid var(--bg3);background:var(--bg2);display:flex;align-items:center;gap:.875rem;opacity:.3;cursor:default;transition:all .2s ease;position:relative;overflow:hidden}
+.day-card::before{content:'';position:absolute;inset:0;opacity:0;transition:opacity .2s;border-radius:inherit}
+.day-card.unlocked{opacity:1;cursor:pointer;border-color:rgba(244,43,166,.22)}
+.day-card.unlocked::before{background:radial-gradient(ellipse 80% 130% at 0% 50%,rgba(244,43,166,.05) 0%,transparent 60%);opacity:1}
+.day-card.unlocked:hover{border-color:rgba(244,43,166,.48);transform:translateX(2px)}
+.day-card.completed{opacity:1;cursor:pointer;border-color:rgba(193,255,114,.22)}
+.day-card.completed::before{background:radial-gradient(ellipse 80% 130% at 0% 50%,rgba(193,255,114,.04) 0%,transparent 60%);opacity:1}
+.day-card.completed:hover{border-color:rgba(193,255,114,.42)}
+.card-icon{font-size:1.35rem;min-width:1.9rem;text-align:center}
+.card-body{flex:1;min-width:0}
+.card-label{font-size:.58rem;text-transform:uppercase;letter-spacing:.15em;color:var(--txt3);margin-bottom:.18rem}
+.day-card.unlocked .card-label{color:var(--pk)}
+.day-card.completed .card-label{color:var(--lm)}
+.card-title{font-weight:600;font-size:.88rem;margin-bottom:.12rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.card-tagline{font-size:.7rem;color:var(--txt3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.card-arr{font-size:.95rem;color:var(--pk);flex-shrink:0}
+.day-card.completed .card-arr{color:var(--lm)}
+
+.done-banner{max-width:460px;margin:0 auto 3rem;padding:0 1.5rem;display:none}
+.done-inner{border:1px solid rgba(193,255,114,.25);border-radius:16px;padding:1.75rem;text-align:center;background:linear-gradient(135deg,rgba(244,43,166,.06),rgba(193,255,114,.06))}
+.done-inner p:first-child{color:var(--lm);font-weight:600;margin-bottom:.5rem}
+.done-inner p:last-child{color:var(--txt2);font-size:.82rem;line-height:1.75}
+
+/* DAY VIEW */
+.day-nav{display:flex;align-items:center;justify-content:space-between;padding:1rem 1.4rem;border-bottom:1px solid var(--bg3);position:sticky;top:0;background:rgba(0,0,0,.93);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);z-index:10}
+.btn-back{background:none;border:none;color:var(--txt3);cursor:pointer;font-size:.8rem;font-family:'Poppins',sans-serif;padding:0;transition:color .2s}
+.btn-back:hover{color:var(--txt2)}
+.day-ctr{font-size:.65rem;color:var(--txt3);text-transform:uppercase;letter-spacing:.18em}
+
+.step-ind{display:flex;flex-direction:column;align-items:center;padding:1.1rem 1.5rem 0;gap:.45rem}
+.dots{display:flex;gap:.4rem}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--bg3);transition:background .3s,width .3s}
+.dot.active{background:var(--pk);width:18px;border-radius:3px}
+.dot.done{background:rgba(193,255,114,.45)}
+.step-lbl{font-size:.62rem;color:var(--txt3);text-transform:uppercase;letter-spacing:.15em}
+
+.day-hdr{text-align:center;padding:1.4rem 1.5rem 0}
+.day-emoji-lg{font-size:2.1rem;margin-bottom:.4rem}
+.day-title-lg{font-size:1.35rem;font-weight:700;letter-spacing:-.01em;margin-bottom:.2rem}
+.day-tag-sm{color:var(--txt3);font-size:.77rem}
+
+.step-wrap{max-width:600px;margin:0 auto;padding:1.75rem 1.5rem 3rem}
+
+/* Reading */
+.belief-chip{background:rgba(244,43,166,.07);border:1px solid rgba(244,43,166,.18);border-radius:10px;padding:.7rem 1rem;margin-bottom:1.4rem;font-size:.77rem;color:var(--txt2);line-height:1.7}
+.belief-chip strong{color:var(--pk);font-weight:500}
+.read-h{color:var(--pk);font-weight:600;font-size:.93rem;margin-bottom:1.2rem}
+
+/* Rich text rendering */
+.rtext{color:#c5c5c5;font-size:.88rem;line-height:2;font-weight:300}
+.rtext p{margin-bottom:1rem}
+.rtext p:last-child{margin-bottom:0}
+.rtext strong{color:#efefef;font-weight:500}
+.rtext em{color:var(--tl);font-style:italic}
+.rtext ul{margin:.25rem 0 1rem 0;padding-left:0;list-style:none}
+.rtext ul li{padding:.25rem 0 .25rem 1.25rem;position:relative;font-size:.86rem;color:#c0c0c0}
+.rtext ul li::before{content:'—';position:absolute;left:0;color:var(--pk);font-weight:500}
+.rtext .highlight{display:block;background:rgba(193,255,114,.06);border-left:2px solid var(--lm);border-radius:0 8px 8px 0;padding:.7rem 1rem;margin:.5rem 0 1rem;font-size:.84rem;color:#d8d8d8;line-height:1.85}
+.rtext .q-block{display:block;margin:.25rem 0 1rem;padding-left:1rem;border-left:2px solid var(--bg4);font-style:italic;color:var(--txt2);font-size:.84rem;line-height:1.85}
+
+/* Reflect */
+.q-card{background:var(--bg2);border-left:2px solid var(--tl);border-radius:0 12px 12px 0;padding:1.1rem 1.2rem;margin-bottom:1.1rem}
+.q-text{color:#e2e2e2;font-size:.9rem;line-height:1.8;font-weight:500}
+textarea.ans{width:100%;min-height:130px;background:var(--bg2);border:1px solid var(--bg3);border-radius:12px;padding:.9rem 1rem;color:var(--txt);font-size:.86rem;font-family:'Poppins',sans-serif;line-height:1.8;resize:vertical;transition:border-color .2s}
+textarea.ans:focus{outline:none;border-color:rgba(44,184,176,.42)}
+textarea.ans::placeholder{color:var(--txt3)}
+
+/* Practice */
+.prac-h{color:var(--lm);font-weight:600;font-size:.9rem;margin-bottom:.4rem}
+.prac-instr{color:var(--txt2);font-size:.81rem;line-height:1.85;margin-bottom:1rem;font-weight:300}
+.prac-prompt{background:rgba(193,255,114,.05);border:1px solid rgba(193,255,114,.18);border-radius:10px;padding:.7rem 1rem;font-size:.82rem;color:var(--lm);font-style:italic;margin-bottom:.875rem}
+
+/* Affirmation */
+.affirm-wrap{text-align:center;padding:.25rem 0}
+.affirm-icon{font-size:2.4rem;margin-bottom:.75rem}
+.affirm-done{color:var(--lm);font-weight:700;font-size:.97rem;margin-bottom:1.4rem}
+.affirm-box{background:linear-gradient(135deg,rgba(244,43,166,.08),rgba(44,184,176,.08));border:1px solid rgba(244,43,166,.2);border-radius:18px;padding:1.75rem 1.5rem;margin-bottom:1.1rem}
+.affirm-q{font-size:1.05rem;font-weight:600;color:var(--txt);line-height:1.7;font-style:italic;margin-bottom:.75rem}
+.affirm-hint{font-size:.75rem;color:var(--txt2);line-height:1.65}
+.unlock-msg{color:var(--txt3);font-size:.8rem;line-height:1.8;margin-bottom:1.4rem}
+
+/* Buttons */
+.btn-p{display:block;width:100%;padding:.875rem 1.25rem;background:var(--pk);color:#fff;border:none;border-radius:12px;font-size:.9rem;font-weight:600;cursor:pointer;font-family:'Poppins',sans-serif;margin-top:.875rem;transition:opacity .2s,transform .15s;text-align:center}
+.btn-p:hover{opacity:.87}.btn-p:active{transform:scale(.985)}
+.btn-p.lime{background:linear-gradient(135deg,var(--pk),var(--lm));color:#000}
+.btn-row{display:flex;gap:.65rem;margin-top:.875rem}
+.btn-g{flex:1;padding:.8rem;background:none;border:1px solid var(--bg3);color:var(--txt3);border-radius:12px;cursor:pointer;font-family:'Poppins',sans-serif;font-size:.82rem;transition:color .2s}
+.btn-g:hover{color:var(--txt2)}
+.btn-f{flex:2;padding:.8rem;background:var(--pk);color:#fff;border:none;border-radius:12px;font-size:.87rem;font-weight:600;cursor:pointer;font-family:'Poppins',sans-serif;transition:opacity .2s}
+.btn-f:hover{opacity:.87}
+.btn-fin{flex:2;padding:.8rem;background:linear-gradient(135deg,var(--pk),var(--tl));color:#fff;border:none;border-radius:12px;font-size:.87rem;font-weight:600;cursor:pointer;font-family:'Poppins',sans-serif;transition:opacity .2s}
+.btn-fin:hover{opacity:.87}
+
+@media(max-width:480px){.home-title{font-size:2rem}.step-wrap{padding:1.4rem 1.1rem 3rem}}
+</style>
+</head>
+<body>
+<h2 class="sr-only">Money Love: a 6-day guided experience by Prosperity Pact to transform your relationship with money, based on the teachings of Sarah McCrum.</h2>
+
+<!-- HOME -->
+<div id="view-home" class="view active">
+  <div class="home-glow">
+    <div class="eyebrow">Prosperity Pact</div>
+    <div class="home-title">Money Love</div>
+    <p class="home-sub">A 6-day journey to change everything between you and money</p>
+    <div class="home-rule"></div>
+  </div>
+  <div class="prog-wrap">
+    <div class="prog-meta"><span>Your progress</span><span class="prog-count" id="prog-text">0 of 6 days complete</span></div>
+    <div class="prog-track"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
+  </div>
+  <div class="info-toggle-wrap">
+    <button class="info-toggle" id="info-btn" onclick="toggleInfo()">How this works ↓</button>
+  </div>
+  <div class="info-panel" id="info-panel">
+    <div class="info-inner">
+      <strong>Welcome to Money Love.</strong><br><br>
+      This is a 6-day guided experience based on the teachings of Sarah McCrum's <em>Love Money, Money Loves You</em>, brought to you through Prosperity Pact.<br><br>
+      Each day has a reading (3 to 5 minutes), two reflection questions, and a writing practice. Complete a day to unlock the next one. No rush, no timeline. Come back whenever you are ready.<br><br>
+      Your answers save automatically in your browser. You can close this and return anytime.
+    </div>
+  </div>
+  <div class="days-list" id="days-list"></div>
+  <div class="done-banner" id="done-banner">
+    <div class="done-inner">
+      <p>You completed Money Love.</p>
+      <p>Your relationship with money is different now. Tend it like it matters. Because it does.</p>
+    </div>
+  </div>
+</div>
+
+<!-- DAY VIEW -->
+<div id="view-day" class="view">
+  <nav class="day-nav">
+    <button class="btn-back" onclick="goHome()">← All days</button>
+    <span class="day-ctr" id="day-ctr">Day 1 of 6</span>
+    <div style="width:3rem"></div>
+  </nav>
+  <div class="step-ind">
+    <div class="dots" id="step-dots"></div>
+    <div class="step-lbl" id="step-lbl">Reading</div>
+  </div>
+  <div class="day-hdr">
+    <div class="day-emoji-lg" id="d-emoji"></div>
+    <div class="day-title-lg" id="d-title"></div>
+    <div class="day-tag-sm" id="d-tag"></div>
+  </div>
+  <div class="step-wrap" id="step-content"></div>
+</div>
+
+<script>
+var DAYS=[
+{
+  n:1,emoji:"💌",title:"Who Money Actually Is",tag:"Meeting money differently for the first time",
+  belief:"Money is something to fear, judge, or apologize for",
+  readH:"Who Money Actually Is",
+  reading:[
+    {t:'p',c:"Sarah McCrum was not trying to write a book about money."},
+    {t:'p',c:"She was sitting with her journal after her business in London had collapsed. Tired, humiliated, and out of ideas, she did something she had done before in her spiritual practice: she asked a question and let herself write whatever came without filtering."},
+    {t:'p',c:"The question was simple. <em>What do you want to tell me?</em>"},
+    {t:'p',c:"What came back was not her voice. It was something else entirely. And the first thing it said was: <strong>I would like you to love me.</strong>"},
+    {t:'p',c:"That is where this whole framework begins. Not with a strategy. Not with a mindset shift. With money introducing itself."},
+    {t:'p',c:"What came through dismantled almost everything most of us have been taught:"},
+    {t:'ul',items:["I am not the devil. I have never been.","I am a glorious being of light.","I am not dirty. I am not the root of all evil.","I am the invisible thread that connects human beings.","I am the network through which your talents meet the people who need them."]},
+    {t:'p',c:"Read that again slowly."},
+    {t:'p',c:"Money is not a resource you compete for. It is not a reward for suffering enough. It is a <strong>frequency</strong>, an energy that is fundamentally unlimited, because it is not a physical object with a fixed supply. It is more like light than like gold. And just like light, it flows where conditions allow it to."},
+    {t:'p',c:"Here is what makes this genuinely disruptive: money has its own vibration, and that vibration is <strong>generosity</strong>. Not neutrality. Not judgment. Generosity. The energy of money wants for you what your soul wants for you. It is not indifferent to your purpose. It is in service to it."},
+    {t:'hl',c:"The question is never really \"how do I get more money.\" The real question is: what in me is making it difficult for money to arrive?"}
+  ],
+  q1:"If money could speak to you right now, what do you think it would say about how you have been treating it?",
+  q2:"When was the last time receiving or spending money felt genuinely joyful, without guilt or tension? What was different about that moment?",
+  pracH:"Write to Money",
+  pracInstr:"Start a letter with the prompt below and write whatever wants to come. No filtering. No wrong answers. Let yourself be honest for at least 3 to 4 sentences.",
+  pracPrompt:"Dear Money, I have been...",
+  affirm:"I love money and money loves me.",
+  affirmHint:"Say this out loud three times. Even if it feels strange. Especially if it feels strange."
+},
+{
+  n:2,emoji:"🌊",title:"Why Chasing It Pushes It Away",tag:"The mechanism nobody explained to you",
+  belief:"The harder I push, the more I will receive",
+  readH:"Why Chasing It Pushes It Away",
+  reading:[
+    {t:'p',c:"There is a distinction that sounds almost too simple until you feel it land in your body."},
+    {t:'p',c:"<strong>Contraction. Expansion.</strong> That is the whole mechanism."},
+    {t:'p',c:"When we are afraid about money, whether it is panic about a slow month, shame about a price we charged, or the low-grade anxiety of checking our bank balance every morning as if bracing for bad news, our entire system contracts. And contraction is the opposite of receptive. It is closed. It is defended. It has no room for anything new to arrive."},
+    {t:'p',c:"This is not metaphor. It is functional. The energy of money is <strong>repelled by desperation</strong>, not because money is cruel or withholding, but because desperation and receptivity are mutually exclusive states. You cannot be clenched and open at the same time."},
+    {t:'p',c:"Think about the last time you chased something in your business from real fear:"},
+    {t:'ul',items:["The frantic post written from panic","The offer discounted before anyone even said no","The client conversation where you were already shrinking before they responded"]},
+    {t:'p',c:"Did it work? And even when it technically worked, how did it feel?"},
+    {t:'p',c:"Now think about a time when a client arrived effortlessly. When an opportunity appeared before you were even looking for it. What state were you in?"},
+    {t:'hl',c:"Relaxation is not a luxury. It is a financial tool. The energy of money is already flowing constantly, all around you, toward people who are genuinely open to it. Your job is not to chase it. Your job is to stop pushing it away."},
+    {t:'p',c:"And the most direct path to that is <strong>joy</strong>."},
+    {t:'p',c:"Not performed positivity. Not affirmations repeated through clenched teeth. Actual, embodied, present-moment joy. The kind that makes your chest open instead of contract. Money is attracted to the vibration of enjoyment. To people who are genuinely delighting in their work, their life, their creativity. <strong>Joy is not a reward you get after the money arrives. Joy is part of what makes the money arrive.</strong>"}
+  ],
+  q1:"Where in your body do you feel the tension when you think about money? What situation triggers it most?",
+  q2:"What would open in you if receiving money were allowed to be a genuinely joyful experience, not something you had to earn through struggle?",
+  pracH:"Find Your Joy",
+  pracInstr:"Think about the part of your work that genuinely lights you up, where you lose track of time, where it feels effortless. Write about it in detail. What is happening? What does it feel like in your body?",
+  pracPrompt:"When I am in genuine joy in my work, I am...",
+  affirm:"My relaxation is my receptivity. Joy is my greatest financial asset.",
+  affirmHint:"Take three slow breaths before you say this. Let your body actually land in it."
+},
+{
+  n:3,emoji:"🔓",title:"The Hardest Step",tag:"Which is also the first one",
+  belief:"There's never enough money. You have to struggle to deserve it.",
+  readH:"The Hardest Step, Which Is Also the First One",
+  reading:[
+    {t:'p',c:"The blueprint for a new relationship with money has a first step. And it is the most difficult one."},
+    {t:'p',c:"<strong>Forget everything you have learned.</strong>"},
+    {t:'p',c:"Not some of it. All of it."},
+    {t:'p',c:"This sounds like freedom until you realize what you are actually being asked to release. Because the beliefs we carry about money are not just ideas sitting loosely in our minds. They are woven into our identity. Into what we think we deserve. Into how safe we feel in the world."},
+    {t:'p',c:"<em>There's never enough money.</em> The parent who worked three jobs and called rest laziness. The community that equated charging money with betraying your gifts. The spiritual tradition that romanticized poverty and treated wealth as corruption. These were not abstract lessons. They were <strong>emotional architecture</strong>. They became the shape of how you move through the world."},
+    {t:'p',c:"These learned patterns are also the reason why working harder does not produce proportionally more money. If your deep belief is that money requires sacrifice, then no matter how much strategy you layer on top, the underlying frequency stays the same. <strong>You keep recreating the conditions of the belief.</strong>"},
+    {t:'p',c:"The unlearning is not intellectual. You cannot think your way out of an emotional imprint. It is more like holding a question open over time:"},
+    {t:'ul',items:["What if I have had this wrong?","What if ease is not irresponsible?","What if wanting abundance is not greedy but actually generous, because a resourced version of me can do so much more good in the world?"]},
+    {t:'hl',c:"Your old beliefs feel like protection. Struggling to earn feels safer than receiving easily, because somewhere inside you, easy money is suspicious. Rest feels dangerous because your worth has been tied to your output for so long that stopping feels like disappearing."},
+    {t:'p',c:"This is not asking you to pretend those patterns are not there. It is asking you to be <strong>willing</strong>, just willing, to operate under a different set of rules. Even temporarily. Even as an experiment."},
+    {t:'p',c:"Because that willingness, that crack of openness, is exactly where something new can begin."}
+  ],
+  q1:"What is the inherited belief about money that puts the most weight on the simple act of wanting more? Where did you take it from?",
+  q2:"If you let that belief go for just one day, what would feel lighter? What would you do differently?",
+  pracH:"The Experiment",
+  pracInstr:"Write the belief you identified as if it is a story you inherited, not a truth. Then write its opposite as if it were already completely real. Notice what your body does when you read it.",
+  pracPrompt:"The story I was given is... The truth I am opening to is...",
+  affirm:"I release what I was taught. I open to what is true.",
+  affirmHint:"Take a slow breath before and after. Let the space between feel like something."
+},
+{
+  n:4,emoji:"🌿",title:"Working Light",tag:"What if ease was actually the strategy?",
+  belief:"If it does not exhaust me, it does not count",
+  readH:"Working Light",
+  reading:[
+    {t:'p',c:"There is a concept that sounds almost irresponsible the first time you hear it."},
+    {t:'p',c:"<strong>Working Light.</strong>"},
+    {t:'p',c:"Not working hard. Not working smart. Working light."},
+    {t:'p',c:"Most of us learned to work from fear. From the terror of not having enough, not being enough, falling behind, or being exposed as insufficient. And fear in the body is tension. It is a clenched nervous system running on adrenaline, pushing through, grinding, white-knuckling toward some future state of safety that never quite arrives."},
+    {t:'hl',c:"The terrible irony is that this state of tension, this \"I have to make it happen\" energy, is exactly what makes it harder for money to flow."},
+    {t:'p',c:"The alternative is not passivity. It is <strong>sincerity</strong>. Working with honesty and without stress. Showing up to your work because it genuinely matters to you, because it connects to your purpose, because there is real satisfaction in doing it well. Not because you are terrified of what happens if you stop."},
+    {t:'p',c:"The practical difference is enormous:"},
+    {t:'ul',items:["From fear: your creativity narrows, your decisions come from scarcity, your marketing feels like performance because it is, your prices are set from anxiety","From enjoyment: your ideas come from a different place, your communication lands differently, you attract people drawn to the energy you are actually in"]},
+    {t:'p',c:"Your best ideas, the ones that actually change things, do not arrive when you are pushing hardest. They arrive in the shower. On a walk. In the space after a real conversation. That is not accident. <strong>That is a regulated nervous system with room for something new.</strong>"},
+    {t:'p',c:"Working Light is not about doing less. It is about changing what is driving the work:"},
+    {t:'ul',items:["From fear → to genuine care","From tension → to presence","From I have to → to I choose to"]},
+    {t:'p',c:"And here is the part that might genuinely break your brain: that shift, from grind to sincerity, is not just better for your soul. It is better for your income. Because the energy of money flows toward people in a state of genuine receptivity and joy, not toward people who are exhausted and contracted, no matter how hard they are working."}
+  ],
+  q1:"What task in your business do you do with the most tension? What would it feel like to do that exact same thing from sincerity instead of fear?",
+  q2:"When was the last time you worked from genuine ease? What was different that day, and what did it feel like in your body?",
+  pracH:"The Light Version",
+  pracInstr:"Pick one thing you do regularly in your business that you tend to approach with tension. Rewrite how you would do it if you were coming entirely from ease, joy, and genuine care. Be specific.",
+  pracPrompt:"From ease and joy, I would approach this by...",
+  affirm:"I work from love. My ease is not laziness. It is my greatest asset.",
+  affirmHint:"Your body might resist this one. Let it resist and say it anyway."
+},
+{
+  n:5,emoji:"💫",title:"The Beautiful Request",tag:"Asking for what you want without apologizing",
+  belief:"Asking for money is shameful. I should want less.",
+  readH:"The Beautiful Request",
+  reading:[
+    {t:'p',c:"Most of us ask for money in one of two broken ways."},
+    {t:'p',c:"Either we perform confidence we do not actually feel, inflating our value with language that sounds like everyone else's marketing. Or we undercharge and apologize for it, making ourselves small before anyone even had a chance to say no."},
+    {t:'p',c:"Neither of those is a clean ask."},
+    {t:'p',c:"A <strong>Beautiful Request</strong> is something different. It is a request made from the heart, aligned with your genuine purpose, made with lightness instead of urgency, clarity instead of apology. Asking for what you actually want, connected to why it actually matters, without the weight of desperation pulling it down."},
+    {t:'hl',c:"You do not even have to believe it will happen. You do not need certainty. You do not need to have already healed every block around receiving before you are allowed to ask. You just need to be open enough to make the request without already collapsing it with your doubt."},
+    {t:'p',c:"Think about what you charge for your work. Think about how you feel in the moment of naming that number:"},
+    {t:'ul',items:["Are you already apologizing before the other person responds?","Already preparing to discount?","Already framing the price as if it is a problem?"]},
+    {t:'p',c:"That contraction in the ask is exactly what shifts with a Beautiful Request. Because the price is not just a number. <strong>It is a frequency.</strong> It carries how you feel about receiving. And if the ask is wrapped in shame or fear, the other person feels that, even when they cannot name it."},
+    {t:'p',c:"A Beautiful Request comes from a completely different state. It says: <em>this is what I offer. This is what I am asking for it.</em> And both of those things are said without reservation."},
+    {t:'p',c:"The energy of money responds most powerfully to requests that are genuinely aligned with your purpose. Not the ego's fear-based wants. The deep, real desires that connect to why you actually do this work. <strong>That kind of ask lands differently.</strong> In you, and in the field around you."}
+  ],
+  q1:"What financial ask have you been avoiding? Name the actual number or the actual thing, without making it small.",
+  q2:"How would it feel to make that exact request from joy and clarity instead of from apology or fear? What would change?",
+  pracH:"Write Your Beautiful Request",
+  pracInstr:"Write a direct, loving request to the energy of money. Include what you want and why it matters to your work. No just, no only, no if that is okay. Say the full thing.",
+  pracPrompt:"Money, what I am asking for is...",
+  affirm:"I ask clearly. I receive openly. Money loves a direct conversation.",
+  affirmHint:"Say this before your next pricing conversation too."
+},
+{
+  n:6,emoji:"🌸",title:"The Four Currencies and the Well of Being",tag:"Where it actually becomes real",
+  belief:"Real wealth is a number I have not reached yet",
+  readH:"The Four Currencies and the Well of Being",
+  reading:[
+    {t:'p',c:"Real wealth is not a number. It is an ecosystem of four currencies:"},
+    {t:'ul',items:["<strong>Money:</strong> the energy of exchange and connection","<strong>Time:</strong> not just quantity, but the quality and joy of how it is lived","<strong>Relationships:</strong> connections where money amplifies generosity instead of creating power dynamics","<strong>Wisdom:</strong> the capacity to see the whole picture and tend to the other three"]},
+    {t:'p',c:"Having only one of them in abundance, even the one that looks most like success, is not actually rich. It is just lopsided."},
+    {t:'p',c:"Think about the person with a lot of money who has no time, whose relationships are transactional, and who makes decisions from fear. Or the person with deep wisdom and beautiful relationships who is chronically under-resourced financially. Both are experiencing a form of poverty, just in different currencies."},
+    {t:'hl',c:"Wisdom is the master currency because it is the one that helps you tend to the others. It turns the other three into an actual life."},
+    {t:'p',c:"But underneath all four of them is something called the <strong>Well of Being.</strong>"},
+    {t:'p',c:"This is the concept that might open you the most."},
+    {t:'p',c:"The Well of Being is not a state you reach after you heal everything. It is not a reward for finally getting your money blocks cleared or your pricing right or your worth figured out. <strong>It exists right now</strong>, underneath the fear and the striving and the stories, as a place of genuine fullness that was never dependent on your circumstances."},
+    {t:'p',c:"Most of our financial decisions are made from the opposite of this. They come from scarcity, from the anxious question of <em>what if there is not enough</em>, and that question generates choices that keep recreating the conditions of not enough."},
+    {t:'p',c:"Acting from the Well of Being means making decisions from wholeness instead:"},
+    {t:'ul',items:["Not pretending the fear is not there","But choosing not to let fear be the thing driving you","Asking: what would I do here if I already felt complete? And then doing that"]},
+    {t:'p',c:"This is where these six days have been pointing. Not to a set of techniques for attracting money. But to a fundamentally different relationship with it. One where money is not something you chase or fear or manipulate or apologize for, but something you are genuinely in relationship with."},
+    {t:'p',c:"Something you love. And that loves you back."},
+    {t:'hl',c:"I love money and money loves me. Say it like you mean it. Or say it until you do."}
+  ],
+  q1:"Which of the four currencies feels most scarce right now? Which one brings you the most genuine joy?",
+  q2:"If you made your next business decision from the Well of Being, from genuine fullness rather than fear, what would that decision actually be?",
+  pracH:"The Commitment Letter",
+  pracInstr:"Write a short, honest commitment to your relationship with money going forward. Not a vow of perfection. Just a real statement of what you are choosing from here.",
+  pracPrompt:"Money, from today I commit to...",
+  affirm:"I am in a loving, growing relationship with money. And it begins now.",
+  affirmHint:"You have done the work. This is true."
+}
+];
+
+var STEP_NAMES=['Reading','Reflection 1','Reflection 2','Practice','Complete'];
+var state={done:[],ans:{},cur:null,step:0};
+
+function load(){
+  try{var d=localStorage.getItem('ml2_done');if(d)state.done=JSON.parse(d)}catch(e){}
+  try{var a=localStorage.getItem('ml2_ans');if(a)state.ans=JSON.parse(a)}catch(e){}
+}
+function saveDone(){try{localStorage.setItem('ml2_done',JSON.stringify(state.done))}catch(e){}}
+function saveAns(){try{localStorage.setItem('ml2_ans',JSON.stringify(state.ans))}catch(e){}}
+function unlocked(n){return n===1||state.done.indexOf(n-1)>-1}
+function completed(n){return state.done.indexOf(n)>-1}
+
+function renderHome(){
+  document.getElementById('view-home').classList.add('active');
+  document.getElementById('view-day').classList.remove('active');
+  var c=state.done.length;
+  document.getElementById('prog-text').textContent=c+' of 6 days complete';
+  document.getElementById('prog-fill').style.width=Math.round(c/6*100)+'%';
+  var list=document.getElementById('days-list');
+  list.innerHTML='';
+  DAYS.forEach(function(d){
+    var unl=unlocked(d.n),done=completed(d.n);
+    var card=document.createElement('div');
+    card.className='day-card'+(unl?' unlocked':'')+(done?' completed':'');
+    card.innerHTML=
+      '<div class="card-icon">'+(done?'✓':unl?d.emoji:'🔒')+'</div>'+
+      '<div class="card-body">'+
+        '<div class="card-label">Day '+d.n+(done?' · Complete':unl?' · Ready':' · Locked')+'</div>'+
+        '<div class="card-title">'+d.title+'</div>'+
+        '<div class="card-tagline">'+d.tag+'</div>'+
+      '</div>'+
+      (unl?'<div class="card-arr">'+(done?'↩':'→')+'</div>':'');
+    if(unl)(function(n){card.onclick=function(){openDay(n)}})(d.n);
+    list.appendChild(card);
+  });
+  document.getElementById('done-banner').style.display=state.done.length===6?'block':'none';
+}
+
+function toggleInfo(){
+  var p=document.getElementById('info-panel'),b=document.getElementById('info-btn');
+  var vis=p.style.display==='block';
+  p.style.display=vis?'none':'block';
+  b.textContent=vis?'How this works ↓':'Close ↑';
+}
+
+function buildRtext(nodes){
+  return nodes.map(function(n){
+    if(n.t==='p') return '<p>'+n.c+'</p>';
+    if(n.t==='ul') return '<ul>'+n.items.map(function(i){return'<li>'+i+'</li>'}).join('')+'</ul>';
+    if(n.t==='hl') return '<span class="highlight">'+n.c+'</span>';
+    if(n.t==='qb') return '<span class="q-block">'+n.c+'</span>';
+    return '';
+  }).join('');
+}
+
+function openDay(n){
+  state.cur=n;state.step=0;
+  document.getElementById('view-home').classList.remove('active');
+  document.getElementById('view-day').classList.add('active');
+  renderDay();
+}
+
+function goHome(){
+  flushAns();
+  document.getElementById('view-day').classList.remove('active');
+  renderHome();
+}
+
+function flushAns(){
+  var f=document.getElementById('ans-field');
+  if(!f)return;
+  var d=DAYS.find(function(x){return x.n===state.cur});if(!d)return;
+  var keys=[null,d.n+'_q1',d.n+'_q2',d.n+'_p'];
+  var k=keys[state.step];
+  if(k){state.ans[k]=f.value;saveAns()}
+}
+
+function renderDay(){
+  var d=DAYS.find(function(x){return x.n===state.cur});
+  var s=state.step;
+  document.getElementById('day-ctr').textContent='Day '+d.n+' of 6';
+  document.getElementById('d-emoji').textContent=d.emoji;
+  document.getElementById('d-title').textContent=d.title;
+  document.getElementById('d-tag').textContent=d.tag;
+  document.getElementById('step-lbl').textContent=STEP_NAMES[s];
+  var dotsEl=document.getElementById('step-dots');
+  dotsEl.innerHTML='';
+  for(var i=0;i<5;i++){
+    var dot=document.createElement('div');
+    dot.className='dot'+(i<s?' done':i===s?' active':'');
+    dotsEl.appendChild(dot);
+  }
+  var ct=document.getElementById('step-content');
+
+  if(s===0){
+    ct.innerHTML=
+      '<div class="belief-chip"><strong>Belief we\'re examining today:</strong> "'+d.belief+'"</div>'+
+      '<div class="read-h">'+d.readH+'</div>'+
+      '<div class="rtext">'+buildRtext(d.reading)+'</div>'+
+      '<button class="btn-p" onclick="setStep(1)">I\'ve read this → let\'s reflect</button>';
+  }
+  else if(s===1){
+    var k1=d.n+'_q1';
+    ct.innerHTML=
+      '<div class="q-card"><p class="q-text">'+d.q1+'</p></div>'+
+      '<textarea class="ans" id="ans-field" rows="6" placeholder="Write here...">'+(state.ans[k1]||'')+'</textarea>'+
+      '<div class="btn-row">'+
+        '<button class="btn-g" onclick="setStep(0)">← Back</button>'+
+        '<button class="btn-f" onclick="next(\''+k1+'\',2)">Next question →</button>'+
+      '</div>';
+  }
+  else if(s===2){
+    var k2=d.n+'_q2';
+    ct.innerHTML=
+      '<div class="q-card"><p class="q-text">'+d.q2+'</p></div>'+
+      '<textarea class="ans" id="ans-field" rows="6" placeholder="Write here...">'+(state.ans[k2]||'')+'</textarea>'+
+      '<div class="btn-row">'+
+        '<button class="btn-g" onclick="setStep(1)">← Back</button>'+
+        '<button class="btn-f" onclick="next(\''+k2+'\',3)">Time to practice →</button>'+
+      '</div>';
+  }
+  else if(s===3){
+    var kp=d.n+'_p';
+    ct.innerHTML=
+      '<div class="prac-h">'+d.pracH+'</div>'+
+      '<p class="prac-instr">'+d.pracInstr+'</p>'+
+      '<div class="prac-prompt">'+d.pracPrompt+'</div>'+
+      '<textarea class="ans" id="ans-field" rows="7" placeholder="Continue here...">'+(state.ans[kp]||'')+'</textarea>'+
+      '<div class="btn-row">'+
+        '<button class="btn-g" onclick="setStep(2)">← Back</button>'+
+        '<button class="btn-fin" onclick="finish(\''+kp+'\')">Complete Day '+d.n+' ✨</button>'+
+      '</div>';
+  }
+  else if(s===4){
+    var nxt=d.n<6;
+    ct.innerHTML=
+      '<div class="affirm-wrap">'+
+        '<div class="affirm-icon">🌸</div>'+
+        '<div class="affirm-done">Day '+d.n+' complete</div>'+
+        '<div class="affirm-box">'+
+          '<p class="affirm-q">"'+d.affirm+'"</p>'+
+          '<p class="affirm-hint">'+d.affirmHint+'</p>'+
+        '</div>'+
+        '<p class="unlock-msg">'+(nxt?'Day '+(d.n+1)+' is now unlocked. Come back when you are ready.':'You have completed all 6 days. Your relationship with money is different now. Keep showing up to it.')+'</p>'+
+        '<button class="btn-p lime" onclick="goHome()">'+(nxt?'Back to all days →':'See your full journey →')+'</button>'+
+      '</div>';
+  }
+  window.scrollTo(0,0);
+}
+
+function setStep(n){state.step=n;renderDay()}
+
+function next(key,ns){
+  var f=document.getElementById('ans-field');
+  if(f){state.ans[key]=f.value;saveAns()}
+  state.step=ns;renderDay();
+}
+
+function finish(key){
+  var f=document.getElementById('ans-field');
+  if(f){state.ans[key]=f.value;saveAns()}
+  var n=state.cur;
+  if(state.done.indexOf(n)===-1){state.done.push(n);saveDone()}
+  state.step=4;renderDay();
+}
+
+load();renderHome();
+</script>
+</body>
+</html>
