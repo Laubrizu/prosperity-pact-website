@@ -82,7 +82,7 @@ const {useState, useEffect, useRef} = React;
 const P   = '#f42ba6';  // pink
 const T   = '#2cb8b0';  // teal
 const L   = '#c1ff72';  // lime
-const RED = '#e11d48';  // red — only for expense amounts in forms
+const RED = '#df1737';  // red — only for expense amounts in forms
 
 // Text colors (used inside white cards)
 const TXT  = '#111827';
@@ -652,44 +652,17 @@ function App() {
               <p className="text-xs mb-3" style={{color:TXT3}}>Coaching, sessions, retreats, OTOs, digital products.</p>
               <EList rows={incR} setRows={setIncR} add="Add offer or service"/>
 
-              <SecLabel t="Affiliate Commissions"/>
-              <p className="text-xs mb-3" style={{color:TXT3}}>Product price × your % × monthly referrals = your monthly income.</p>
-              <div className="grid gap-1.5 mb-2 items-end" style={{gridTemplateColumns:'1fr 64px 52px 52px auto'}}>
-                <FieldLabel t="Affiliate"/><FieldLabel t="Price $"/><FieldLabel t="Comm %"/><FieldLabel t="Refs/mo"/><span/>
-              </div>
-              {affs.map(a=>(
-                <div key={a.id} className="grid gap-1.5 mb-2 items-center" style={{gridTemplateColumns:'1fr 64px 52px 52px auto'}}>
-                  <input className="inp" style={{textAlign:'left'}} value={a.name}
-                    onChange={e=>upA(a.id,'name',e.target.value)} placeholder="Affiliate name"/>
-                  <NI val={a.price} set={v=>upA(a.id,'price',v)}/>
-                  <NI val={a.comm} set={v=>upA(a.id,'comm',v)}/>
-                  <NI val={a.refs} set={v=>upA(a.id,'refs',v)}/>
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs font-bold min-w-12 text-right" style={{color:T}}>
-                      {$n((a.refs||0)*(a.price||0)*(a.comm||0)/100)}
-                    </span>
-                    <button onClick={()=>setAffs(as=>as.filter(x=>x.id!==a.id))}
-                      style={{background:'none',border:'none',cursor:'pointer',color:'#d1d5db',fontSize:18,lineHeight:1}}
-                      onMouseEnter={e=>e.target.style.color='#9ca3af'} onMouseLeave={e=>e.target.style.color='#d1d5db'}>×</button>
-                  </div>
-                </div>
-              ))}
-              <button onClick={()=>setAffs(as=>[...as,newAff()])}
-                style={{background:'none',border:'none',cursor:'pointer',color:T,fontFamily:'Poppins,sans-serif',fontSize:12,fontWeight:600}}>
-                + Add affiliate
-              </button>
-
-              {totalIncome>0&&(
+              {(sNet+incT)>0&&(
                 <div className="flex justify-between items-center mt-5 pt-4 border-t" style={{borderColor:'rgba(44,184,176,0.20)'}}>
-                  <span className="font-bold" style={{color:T}}>Total monthly income</span>
-                  <span className="text-2xl font-bold" style={{color:T}}>{$n(totalIncome)}</span>
+                  <span className="font-bold" style={{color:T}}>Skool + services</span>
+                  <span className="text-xl font-bold" style={{color:T}}>{$n(sNet+incT)}</span>
                 </div>
               )}
             </div>
 
             {/* Expenses card */}
             <div className="rounded-2xl p-5 border" style={{...CARD, borderColor:'rgba(225,29,72,0.25)'}}>
-              <div className="h-1 -mx-5 -mt-5 mb-5 rounded-t-2xl" style={{background:'linear-gradient(to right,#e11d48,#f97316)'}}/>
+              <div className="h-1 -mx-5 -mt-5 mb-5 rounded-t-2xl" style={{background:'linear-gradient(to right,#df1737,#f97316)'}}/>
               <div className="text-xs font-bold uppercase tracking-widest mb-4" style={{color:RED}}>Expenses</div>
 
               <SecLabel t="Your Salary — Profit First" col={RED}/>
@@ -738,6 +711,43 @@ function App() {
               )}
             </div>
             </div>{/* end lg:grid */}
+
+            {/* Affiliates — full-width below the 2-col grid */}
+            <div className="rounded-2xl p-5 border mt-4" style={{...CARD, borderColor:'rgba(44,184,176,0.20)'}}>
+              <div className="h-1 -mx-5 -mt-5 mb-5 rounded-t-2xl" style={{background:`linear-gradient(to right,${T},${L})`}}/>
+              <div className="text-xs font-bold uppercase tracking-widest mb-1" style={{color:T}}>Affiliate Commissions</div>
+              <p className="text-xs mb-4" style={{color:TXT3}}>Product price × your commission % × monthly referrals.</p>
+              <div className="grid gap-1.5 mb-2 items-end" style={{gridTemplateColumns:'1fr 64px 52px 52px auto'}}>
+                <FieldLabel t="Affiliate"/><FieldLabel t="Price $"/><FieldLabel t="Comm %"/><FieldLabel t="Refs/mo"/><span/>
+              </div>
+              {affs.map(a=>(
+                <div key={a.id} className="grid gap-1.5 mb-2 items-center" style={{gridTemplateColumns:'1fr 64px 52px 52px auto'}}>
+                  <input className="inp" style={{textAlign:'left'}} value={a.name}
+                    onChange={e=>upA(a.id,'name',e.target.value)} placeholder="Affiliate name"/>
+                  <NI val={a.price} set={v=>upA(a.id,'price',v)}/>
+                  <NI val={a.comm} set={v=>upA(a.id,'comm',v)}/>
+                  <NI val={a.refs} set={v=>upA(a.id,'refs',v)}/>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-bold min-w-12 text-right" style={{color:T}}>
+                      {$n((a.refs||0)*(a.price||0)*(a.comm||0)/100)}
+                    </span>
+                    <button onClick={()=>setAffs(as=>as.filter(x=>x.id!==a.id))}
+                      style={{background:'none',border:'none',cursor:'pointer',color:'#d1d5db',fontSize:18,lineHeight:1}}
+                      onMouseEnter={e=>e.target.style.color='#9ca3af'} onMouseLeave={e=>e.target.style.color='#d1d5db'}>×</button>
+                  </div>
+                </div>
+              ))}
+              <button onClick={()=>setAffs(as=>[...as,newAff()])}
+                style={{background:'none',border:'none',cursor:'pointer',color:T,fontFamily:'Poppins,sans-serif',fontSize:12,fontWeight:600}}>
+                + Add affiliate
+              </button>
+              {totalIncome>0&&(
+                <div className="flex justify-between items-center mt-5 pt-4 border-t" style={{borderColor:'rgba(44,184,176,0.20)'}}>
+                  <span className="font-bold" style={{color:T}}>Total monthly income</span>
+                  <span className="text-2xl font-bold" style={{color:T}}>{$n(totalIncome)}</span>
+                </div>
+              )}
+            </div>
 
             <NavButtons step={step} setStep={setStep}/>
           </div>
