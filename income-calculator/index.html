@@ -1,0 +1,964 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Soul Business Income Calculator | Prosperity Pact</title>
+<meta name="description" content="Map your soul business finances. Calculate Skool income, services, affiliates, and your true monthly number. Free tool by Prosperity Pact.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Berkshire+Swash&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  body { font-family: 'Poppins', sans-serif; }
+  .brand-font { font-family: 'Berkshire Swash', cursive; }
+  input[type=number]::-webkit-inner-spin-button,
+  input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+  input[type=number] { -moz-appearance: textfield; }
+
+  @keyframes fadeUp { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:none; } }
+  .fade-up { animation: fadeUp .22s ease; }
+
+  /* Light inputs — inside white cards */
+  .inp {
+    width: 100%;
+    background: #f3f4f6;
+    border: 1.5px solid #e5e7eb;
+    border-radius: 10px;
+    color: #111827;
+    font-family: 'Poppins', sans-serif;
+    font-size: 13px;
+    padding: 7px 10px;
+    outline: none;
+    transition: border-color .15s, background .15s, box-shadow .15s;
+  }
+  .inp:focus {
+    border-color: #f42ba6;
+    background: #fff;
+    box-shadow: 0 0 0 3px rgba(244,43,166,0.10);
+  }
+  .inp::placeholder { color: #9ca3af; }
+
+  /* Transparent name input */
+  .inp-t {
+    width: 100%;
+    background: transparent;
+    border: none;
+    color: #111827;
+    font-family: 'Poppins', sans-serif;
+    font-size: 13px;
+    padding: 6px 2px;
+    outline: none;
+  }
+  .inp-t::placeholder { color: #9ca3af; }
+  .inp-r { text-align: right; }
+
+  /* Gradient text utility */
+  .grad-teal  { background: linear-gradient(135deg,#2cb8b0,#c1ff72); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+  .grad-pink  { background: linear-gradient(135deg,#f42ba6,#a855f7); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+  .grad-lime  { background: linear-gradient(135deg,#c1ff72,#2cb8b0); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+  .grad-full  { background: linear-gradient(135deg,#c1ff72,#f42ba6,#2cb8b0); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+
+  ::-webkit-scrollbar { width: 4px; height: 4px; }
+  ::-webkit-scrollbar-thumb { background: #374151; border-radius: 4px; }
+</style>
+<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone@7.23.5/babel.min.js"></script>
+<script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-black">
+<div id="root"></div>
+<script type="text/babel">
+const {useState, useEffect, useRef} = React;
+
+// ── Brand palette ──────────────────────────────
+const P   = '#f42ba6';  // pink
+const T   = '#2cb8b0';  // teal
+const L   = '#c1ff72';  // lime
+const RED = '#e11d48';  // red — only for expense amounts in forms
+
+// Text colors (used inside white cards)
+const TXT  = '#111827';
+const TXT2 = '#374151';
+const TXT3 = '#6b7280';
+const DIVD = '#e5e7eb';
+
+// White card style
+const CARD = {background:'#ffffff', boxShadow:'0 1px 6px rgba(0,0,0,0.08)'};
+
+const $n = n => '$' + Math.round(n||0).toLocaleString('en-US');
+const STEPS  = ['Your Life', 'Your Business', 'Full Picture'];
+const MODELS = [
+  {id:'free',         label:'Free',         desc:'Open community. Revenue from offers inside your Classroom.'},
+  {id:'subscription', label:'Subscription',  desc:'Paid membership, monthly or annual.'},
+  {id:'freemium',     label:'Freemium',      desc:'Free to join + 1–2 paid tiers.'},
+  {id:'tiers',        label:'Tiers',         desc:'2–3 paid tiers at different price points.'},
+  {id:'onetime',      label:'1-time',        desc:'One-time payment to join.'},
+];
+
+const mkR = ls => ls.map((l,i) => ({id:i+1, label:l, amount:0}));
+const EXP0 = mkR(['Housing / Rent','Food & Groceries','Transport','Health & Insurance','Personal care','Fun & Leisure','Digital subscriptions']);
+const SAV0 = mkR(['Emergency Fund','Retirement / Pension']);
+const DON0 = mkR(['Charity / Causes','Tithe / Church']);
+const BIZ0 = mkR(['Email platform','Design tools','AI tools','Domain & Hosting','Advertising','Other']);
+const INC0 = mkR(['Coaching / 1:1','Clarity Sessions','Retreats / Events','OTOs / Digital products']);
+
+let _id = 1;
+const newComm = n => ({
+  id:_id++, name:n||'My Community', plan:'hobby', model:'subscription', open:true,
+  inp:{members:0,price:0,freeMembers:0,convRate:5,newMembers:0,m0:0,tp0:0,m1:0,tp1:0,m2:0,tp2:0,n0:'',p0:0,pct0:0,n1:'',p1:0,pct1:0,n2:'',p2:0,pct2:0},
+  otosOn:false,
+  otos:[{id:1,name:'',price:0,pct:0},{id:2,name:'',price:0,pct:0},{id:3,name:'',price:0,pct:0}],
+});
+const newAff = () => ({id:Date.now(), name:'', price:0, comm:40, refs:0});
+
+// ── Calc helpers ───────────────────────────────
+const getGross = (m,i) => {
+  if (m==='free')         return [0,1,2].reduce((s,j)=>s+(i.members||0)*(i['pct'+j]||0)/100*(i['p'+j]||0),0);
+  if (m==='subscription') return (i.members||0)*(i.price||0);
+  if (m==='freemium')     return Math.round((i.freeMembers||0)*(i.convRate||0)/100)*(i.price||0);
+  if (m==='tiers')        return [0,1,2].reduce((s,j)=>s+(i['m'+j]||0)*(i['tp'+j]||0),0);
+  if (m==='onetime')      return (i.newMembers||0)*(i.price||0);
+  return 0;
+};
+const getTM = (m,i) => {
+  if (m==='subscription') return i.members||0;
+  if (m==='freemium')     return i.freeMembers||0;
+  if (m==='tiers')        return [0,1,2].reduce((s,j)=>s+(i['m'+j]||0),0);
+  return i.members||i.newMembers||0;
+};
+const cCalc = c => {
+  const bg=getGross(c.model,c.inp), tm=getTM(c.model,c.inp);
+  const or=c.otosOn?c.otos.reduce((s,o)=>s+tm*(o.pct||0)/100*(o.price||0),0):0;
+  const gr=bg+or, cr=c.plan==='hobby'?.10:.029, pf=c.plan==='hobby'?9.99:99;
+  return {gross:gr, otoRev:or, net:Math.max(0,gr*(1-cr)-pf), cr, pf};
+};
+const commPrice = c => getTM(c.model,c.inp)>0 ? getGross(c.model,c.inp)/getTM(c.model,c.inp) : 0;
+const bandTiers = c => {
+  const m=c.model, i=c.inp;
+  if (m==='subscription'&&i.price) return [{mb:i.members||0,pr:i.price}];
+  if (m==='freemium') {
+    const pd=Math.round((i.freeMembers||0)*(i.convRate||0)/100);
+    const r=[];
+    if (i.freeMembers) r.push({mb:i.freeMembers,pr:0,tag:'free'});
+    if (pd&&i.price) r.push({mb:pd,pr:i.price});
+    return r;
+  }
+  if (m==='tiers') return [0,1,2].filter(j=>i['tp'+j]>0||i['m'+j]>0).map(j=>({mb:i['m'+j]||0,pr:i['tp'+j]||0}));
+  if (m==='free')    return [{mb:i.members||0,pr:0,tag:'free'}];
+  if (m==='onetime'&&i.price) return [{mb:i.newMembers||0,pr:i.price,tag:'new/mo'}];
+  return [];
+};
+
+// ── Number input — stateful to prevent focus loss ──
+// Stores string locally; propagates number to parent only on blur.
+const NI = ({val, set, st, ph, full}) => {
+  const [local, setLocal] = useState(val===0?'':String(val));
+  useEffect(() => { setLocal(val===0?'':String(val)); }, [val]);
+  return (
+    <input type="number"
+      className={'inp inp-r'+(full?' w-full':'')} style={st}
+      value={local} placeholder={ph||'0'}
+      onChange={e => setLocal(e.target.value)}
+      onBlur={() => { const n=parseFloat(local)||0; set(n); setLocal(n===0?'':String(n)); }}
+    />
+  );
+};
+
+// ── Field label ────────────────────────────────
+const FieldLabel = ({t}) => (
+  <div className="text-xs font-semibold uppercase tracking-wider mb-1.5" style={{color:TXT3}}>{t}</div>
+);
+
+// ── Section sub-header inside white card ───────
+const SecLabel = ({t,col}) => (
+  <div className="text-xs font-bold uppercase tracking-widest mt-5 mb-1 pb-2 border-b"
+    style={{color:col||T, borderColor:(col||T)+'30'}}>{t}</div>
+);
+
+// ── Editable row list ──────────────────────────
+const EList = ({rows, setRows, add}) => {
+  const a  = () => setRows(r=>[...r,{id:Date.now(),label:'',amount:0}]);
+  const rm = id => setRows(r=>r.filter(x=>x.id!==id));
+  const up = (id,f,v) => setRows(r=>r.map(x=>x.id===id?{...x,[f]:v}:x));
+  const tot = rows.reduce((s,r)=>s+(Number(r.amount)||0),0);
+  return (
+    <div>
+      {rows.map(r=>(
+        <div key={r.id} className="flex gap-2 items-center py-1.5 border-b" style={{borderColor:DIVD}}>
+          <input className="inp-t flex-1" value={r.label}
+            onChange={e=>up(r.id,'label',e.target.value)} placeholder="Name"/>
+          <span className="text-xs shrink-0" style={{color:'#9ca3af'}}>$</span>
+          <NI val={r.amount} set={v=>up(r.id,'amount',v)} st={{width:88,flexShrink:0}}/>
+          <button onClick={()=>rm(r.id)} style={{background:'none',border:'none',cursor:'pointer',color:'#d1d5db',fontSize:20,lineHeight:1,flexShrink:0}}
+            onMouseEnter={e=>e.target.style.color='#9ca3af'} onMouseLeave={e=>e.target.style.color='#d1d5db'}>×</button>
+        </div>
+      ))}
+      <div className="flex justify-between items-center mt-3">
+        <button onClick={a} style={{background:'none',border:'none',cursor:'pointer',color:T,fontFamily:'Poppins,sans-serif',fontSize:13,fontWeight:600}}>
+          + {add||'Add row'}
+        </button>
+        <span className="font-bold" style={{fontSize:15,color:TXT}}>
+          {$n(tot)}<span style={{fontSize:11,fontWeight:400,color:TXT3}}>/mo</span>
+        </span>
+      </div>
+    </div>
+  );
+};
+
+// ── Model Input ───────────────────────────────
+const MIn = ({model:m, inp:i, set}) => {
+  const N = ({l,f}) => (
+    <div className="mb-3"><FieldLabel t={l}/><NI val={i[f]||0} set={v=>set(f,v)} full/></div>
+  );
+  if (m==='free') return (
+    <div>
+      <N l="Total community members" f="members"/>
+      <SecLabel t="Offers inside (OTOs)" col={T}/>
+      <div className="grid gap-1.5 mb-1" style={{gridTemplateColumns:'1fr 72px 72px'}}>
+        <FieldLabel t="Offer name"/><FieldLabel t="Price $"/><FieldLabel t="% buying"/>
+      </div>
+      {[0,1,2].map(j=>(
+        <div key={j} className="grid gap-1.5 mb-2" style={{gridTemplateColumns:'1fr 72px 72px'}}>
+          <input className="inp" style={{textAlign:'left'}} value={i['n'+j]||''}
+            onChange={e=>set('n'+j,e.target.value)} placeholder={'Offer '+(j+1)}/>
+          <NI val={i['p'+j]||0} set={v=>set('p'+j,v)}/>
+          <NI val={i['pct'+j]||0} set={v=>set('pct'+j,v)}/>
+        </div>
+      ))}
+    </div>
+  );
+  if (m==='subscription') return (
+    <div>
+      <N l="Paying members" f="members"/>
+      <N l="Monthly price ($)" f="price"/>
+      {(i.members||0)*(i.price||0)>0&&<p className="text-xs italic -mt-1 mb-2" style={{color:TXT3}}>{$n((i.members||0)*(i.price||0))}/mo gross</p>}
+    </div>
+  );
+  if (m==='freemium') {
+    const pd=Math.round((i.freeMembers||0)*(i.convRate||0)/100);
+    return (
+      <div>
+        <N l="Free members" f="freeMembers"/>
+        <N l="Conversion to paid (%)" f="convRate"/>
+        <N l="Paid tier price ($)" f="price"/>
+        {pd>0&&<p className="text-xs italic -mt-1 mb-2" style={{color:TXT3}}>~{pd} paid — {$n(pd*(i.price||0))}/mo gross</p>}
+      </div>
+    );
+  }
+  if (m==='tiers') return (
+    <div>
+      {[['Tier 1','m0','tp0'],['Tier 2','m1','tp1'],['Tier 3 (opt)','m2','tp2']].map(([lb,mf,pf])=>(
+        <div key={mf} className="grid grid-cols-2 gap-3 mb-3">
+          <div><FieldLabel t={lb+' — Members'}/><NI val={i[mf]||0} set={v=>set(mf,v)} full/></div>
+          <div><FieldLabel t="Price/mo ($)"/><NI val={i[pf]||0} set={v=>set(pf,v)} full/></div>
+        </div>
+      ))}
+    </div>
+  );
+  if (m==='onetime') return (
+    <div>
+      <N l="New members / month" f="newMembers"/>
+      <N l="One-time price ($)" f="price"/>
+      {(i.newMembers||0)*(i.price||0)>0&&<p className="text-xs italic -mt-1 mb-2" style={{color:TXT3}}>{$n((i.newMembers||0)*(i.price||0))}/mo gross</p>}
+    </div>
+  );
+  return null;
+};
+
+// ── Community card ─────────────────────────────
+const CommCard = ({c, onUpdate, onRemove}) => {
+  const sf=(f,v)=>onUpdate({...c,[f]:v});
+  const si=(f,v)=>onUpdate({...c,inp:{...c.inp,[f]:v}});
+  const so=(idx,f,v)=>onUpdate({...c,otos:c.otos.map((o,j)=>j===idx?{...o,[f]:v}:o)});
+  const {gross,otoRev,net,cr,pf}=cCalc(c);
+  return (
+    <div className="rounded-xl mb-3 overflow-hidden border" style={{...CARD, borderColor:'rgba(44,184,176,0.35)'}}>
+      <div className="flex justify-between items-center px-4 py-3 cursor-pointer select-none"
+        style={{background:c.open?'rgba(44,184,176,0.06)':'transparent'}} onClick={()=>sf('open',!c.open)}>
+        <div className="flex items-center gap-2">
+          <span className="font-bold text-sm" style={{color:TXT}}>{c.name||'Community'}</span>
+          <span className="text-xs font-bold px-2 py-0.5 rounded-full" style={{background:c.plan==='pro'?T:P,color:'#000'}}>{c.plan}</span>
+          <span className="text-xs" style={{color:TXT3}}>{c.model}</span>
+        </div>
+        <div className="flex items-center gap-3">
+          {net>0&&<span className="font-bold text-sm" style={{color:T}}>{$n(net)}/mo</span>}
+          <span className="text-xs" style={{color:'#9ca3af'}}>{c.open?'▲':'▼'}</span>
+          <button onClick={e=>{e.stopPropagation();onRemove();}} style={{background:'none',border:'none',cursor:'pointer',color:'#d1d5db',fontSize:18,lineHeight:1}}
+            onMouseEnter={e=>e.target.style.color='#9ca3af'} onMouseLeave={e=>e.target.style.color='#d1d5db'}>×</button>
+        </div>
+      </div>
+      {c.open&&(
+        <div className="px-4 pb-4 pt-3 border-t" style={{borderColor:DIVD}}>
+          <div className="mb-3">
+            <FieldLabel t="Community name"/>
+            <input className="inp font-semibold" style={{textAlign:'left'}} value={c.name}
+              onChange={e=>sf('name',e.target.value)} placeholder="Community name"/>
+          </div>
+          <div className="grid grid-cols-2 gap-2 mb-4">
+            {[{id:'hobby',l:'Hobby — $9.99/mo',cm:'10% commission'},{id:'pro',l:'Pro — $99/mo',cm:'2.9% commission'}].map(p=>(
+              <div key={p.id} onClick={()=>sf('plan',p.id)}
+                className="rounded-xl p-3 cursor-pointer transition-all border"
+                style={{borderColor:c.plan===p.id?P:DIVD, background:c.plan===p.id?'rgba(244,43,166,0.05)':'#f9fafb'}}>
+                <div className="text-xs font-bold" style={{color:c.plan===p.id?P:TXT3}}>{p.l}</div>
+                <div className="text-xs mt-0.5" style={{color:T}}>{p.cm}</div>
+              </div>
+            ))}
+          </div>
+          <div className="flex flex-wrap gap-2 mb-2">
+            {MODELS.map(m=>(
+              <button key={m.id} onClick={()=>sf('model',m.id)}
+                className="px-3 py-1 rounded-full text-xs font-semibold transition-all border"
+                style={{borderColor:c.model===m.id?T:DIVD, background:c.model===m.id?'rgba(44,184,176,0.09)':'#f9fafb',
+                  color:c.model===m.id?T:TXT3, cursor:'pointer', fontFamily:'Poppins,sans-serif'}}>
+                {m.label}
+              </button>
+            ))}
+          </div>
+          <p className="text-xs mb-4 leading-relaxed" style={{color:TXT3}}>
+            {MODELS.find(m=>m.id===c.model)?.desc}
+          </p>
+          <MIn model={c.model} inp={c.inp} set={si}/>
+          {c.model!=='free'&&(
+            <div className="mt-3">
+              <button onClick={()=>sf('otosOn',!c.otosOn)}
+                style={{background:'none',border:'none',cursor:'pointer',color:T,fontFamily:'Poppins,sans-serif',fontSize:12,fontWeight:600}}>
+                {c.otosOn?'− Hide offers inside':'+ Add offers inside (OTOs)'}
+              </button>
+              {c.otosOn&&(
+                <div className="mt-3">
+                  <div className="grid gap-1.5 mb-2" style={{gridTemplateColumns:'1fr 72px 72px'}}>
+                    <FieldLabel t="Offer"/><FieldLabel t="Price $"/><FieldLabel t="% buying"/>
+                  </div>
+                  {c.otos.map((o,idx)=>(
+                    <div key={o.id} className="grid gap-1.5 mb-2" style={{gridTemplateColumns:'1fr 72px 72px'}}>
+                      <input className="inp" style={{textAlign:'left'}} value={o.name}
+                        onChange={e=>so(idx,'name',e.target.value)} placeholder={'Offer '+(idx+1)}/>
+                      <NI val={o.price} set={v=>so(idx,'price',v)}/>
+                      <NI val={o.pct} set={v=>so(idx,'pct',v)}/>
+                    </div>
+                  ))}
+                  {otoRev>0&&<p className="text-xs italic mt-1" style={{color:T}}>OTO revenue: +{$n(otoRev)}/mo</p>}
+                </div>
+              )}
+            </div>
+          )}
+          {gross>0&&(
+            <div className="rounded-xl px-4 py-3 mt-4 flex flex-wrap gap-4 items-center"
+              style={{background:'linear-gradient(135deg,rgba(44,184,176,0.07),rgba(193,255,114,0.05))', border:'1px solid rgba(44,184,176,0.20)'}}>
+              <span className="text-xs" style={{color:TXT3}}>Gross: <strong style={{color:TXT}}>{$n(gross)}</strong></span>
+              <span className="text-xs" style={{color:TXT3}}>Fees: <strong style={{color:RED}}>−{$n(gross*cr+pf)}</strong></span>
+              <span className="font-bold text-sm ml-auto" style={{color:T}}>You keep: {$n(net)}/mo</span>
+            </div>
+          )}
+          {gross>0&&gross<1254&&c.plan==='hobby'&&(
+            <p className="text-xs italic mt-2" style={{color:TXT3}}>At $1,254/mo revenue, Pro saves you money.</p>
+          )}
+        </div>
+      )}
+    </div>
+  );
+};
+
+// ── Sticky Summary Band ────────────────────────
+const Band = ({needed, sNet, bizInc, comms}) => {
+  const tot=sNet+bizInc, gap=tot-needed, ok=gap>=0;
+  return (
+    <div style={{background:'rgba(5,5,10,0.97)', backdropFilter:'blur(20px)', borderBottom:'1px solid #1f2937'}}>
+      <div className="flex" style={{borderBottom:'1px solid #1a1a2e'}}>
+        {[
+          {l:'You need',        v:$n(needed),          c:'#e5e7eb'},
+          {l:'Skool',           v:$n(sNet),            c:T},
+          {l:'Other',           v:$n(bizInc),          c:T},
+          {l:ok?'Surplus':'Gap',v:$n(Math.abs(gap)),   c:ok?L:P},
+        ].map(({l,v,c},i)=>(
+          <div key={i} className="flex-1 px-3 py-2.5 border-r last:border-r-0" style={{borderColor:'#1a1a2e'}}>
+            <div style={{fontSize:9,fontWeight:700,textTransform:'uppercase',letterSpacing:'0.08em',color:'#4b5563',marginBottom:2}}>{l}</div>
+            <div className="font-bold text-base leading-tight" style={{color:c}}>{v}</div>
+          </div>
+        ))}
+      </div>
+      <div className="flex overflow-x-auto" style={{scrollbarWidth:'none'}}>
+        {comms.length===0&&<div className="px-4 py-2.5 text-xs" style={{color:'#374151'}}>Add communities in Your Business →</div>}
+        {comms.map((c,i)=>{
+          const {net}=cCalc(c), tiers=bandTiers(c);
+          return (
+            <div key={c.id} className="shrink-0 px-4 py-2 border-r" style={{borderColor:'#111827'}}>
+              <div className="flex items-center gap-1.5 mb-0.5">
+                <span className="text-xs font-semibold max-w-28 truncate" style={{color:'#9ca3af'}}>{c.name||'Community '+(i+1)}</span>
+                <span className="text-xs font-bold px-1.5 rounded-full" style={{background:c.plan==='pro'?T:P,color:'#000',fontSize:8}}>{c.plan}</span>
+              </div>
+              <div className="mb-1">
+                {tiers.length===0&&<span className="text-xs" style={{color:'#374151'}}>No members yet</span>}
+                {tiers.map((t,ti)=><div key={ti} className="text-xs" style={{color:'#6b7280'}}>{t.mb.toLocaleString()}{t.tag?' ('+t.tag+')':''}{t.pr?' @ $'+t.pr:''}</div>)}
+              </div>
+              <div className="text-sm font-bold" style={{color:net>0?T:'#374151'}}>{$n(net)}/mo</div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+};
+
+// ── Tabs ──────────────────────────────────────
+const Tabs = ({step, setStep}) => (
+  <div className="flex" style={{background:'rgba(5,5,10,0.97)',backdropFilter:'blur(20px)',borderBottom:'1px solid #1a1a2e'}}>
+    {STEPS.map((s,i)=>(
+      <button key={i} onClick={()=>setStep(i)}
+        className="flex-1 py-3 text-xs font-semibold transition-all"
+        style={{
+          border:'none', borderBottom: i===step?`2px solid ${P}`:'2px solid transparent',
+          color: i===step?P:'#4b5563',
+          background: i===step?'rgba(244,43,166,0.06)':'transparent',
+          cursor:'pointer', fontFamily:'Poppins,sans-serif',
+        }}>{s}</button>
+    ))}
+  </div>
+);
+
+// ── Nav buttons ───────────────────────────────
+const NavButtons = ({step, setStep}) => {
+  const btnStyle = (col) => ({
+    background:'transparent', border:`2px solid ${col}`, color:col,
+    cursor:'pointer', padding:'10px 24px', borderRadius:'999px',
+    fontFamily:'Poppins,sans-serif', fontWeight:700, fontSize:14,
+  });
+  return (
+    <div className="flex justify-between items-center mt-8 pt-6 border-t" style={{borderColor:DIVD}}>
+      {step>0
+        ? <button onClick={()=>setStep(step-1)} style={btnStyle(T)}>← Back</button>
+        : <span/>}
+      {step<2 &&
+        <button onClick={()=>setStep(step+1)} style={btnStyle(P)}>
+          {step===0?'My business →':'See the full picture →'}
+        </button>}
+    </div>
+  );
+};
+
+// ── Header ────────────────────────────────────
+const Header = () => (
+  <div className="fixed top-0 left-0 right-0 z-50" style={{backdropFilter:'blur(12px)',backgroundColor:'rgba(0,0,0,0.95)',borderBottom:'1px solid #1a1a2e'}}>
+    <div className="max-w-2xl mx-auto px-4 py-2.5 flex items-center justify-between">
+      <a href="https://laubrizuela.com" className="brand-font text-lg" style={{color:P}}>Prosperity Pact</a>
+      <a href="https://www.skool.com/prosperity-pact" target="_blank" rel="noopener noreferrer"
+        className="px-4 py-1.5 rounded-full text-xs font-bold transition-all hover:scale-105"
+        style={{backgroundColor:L, color:'#000'}}>Join the community</a>
+    </div>
+  </div>
+);
+
+// ── Footer ────────────────────────────────────
+const Footer = () => (
+  <div className="text-center mt-10 pb-6">
+    <p className="brand-font text-2xl mb-1" style={{color:P}}>Prosperity Pact</p>
+    <p className="text-sm text-gray-500">by <a href="https://laubrizuela.com" target="_blank" rel="noopener noreferrer"
+      className="font-bold underline hover:no-underline" style={{color:P}}>Lau Brizuela</a></p>
+    <p className="text-xs text-gray-600 mt-1">Spiritual Business & Rebel Manifestation Mentor</p>
+    <p className="text-xs text-gray-700 mt-2">© 2026 Lau Brizuela · All rights reserved</p>
+  </div>
+);
+
+// ── Main App ──────────────────────────────────
+function App() {
+  const [step,      setStep]     = useState(0);
+  const [expR,      setExpR]     = useState(EXP0);
+  const [savR,      setSavR]     = useState(SAV0);
+  const [donR,      setDonR]     = useState(DON0);
+  const [comms,     setComms]    = useState([newComm('My Community')]);
+  const [incR,      setIncR]     = useState(INC0);
+  const [affs,      setAffs]     = useState([newAff()]);
+  const [salary,    setSalary]   = useState(0);
+  const [bizR,      setBizR]     = useState(BIZ0);
+  const [taxes,     setTaxes]    = useState({vat:22,income:0,ss:18});
+  const [ideal,     setIdeal]    = useState({skool:0,biz:0,salary:0,expenses:0});
+  const [projComms, setProjComms]= useState({});
+  const [projC,     setProjC]    = useState(0);
+
+  // Measure sticky bar so spacer is always correct
+  const stickyRef = useRef(null);
+  const [stickyH, setStickyH] = useState(200);
+  useEffect(() => {
+    const measure = () => { if(stickyRef.current) setStickyH(stickyRef.current.offsetHeight); };
+    measure();
+    window.addEventListener('resize', measure);
+    return () => window.removeEventListener('resize', measure);
+  }, []);
+
+  const expT=expR.reduce((s,r)=>s+(Number(r.amount)||0),0);
+  const savT=savR.reduce((s,r)=>s+(Number(r.amount)||0),0);
+  const donT=donR.reduce((s,r)=>s+(Number(r.amount)||0),0);
+  const persT=expT+savT+donT;
+
+  const sNet=comms.reduce((s,c)=>s+cCalc(c).net,0);
+  const incT=incR.reduce((s,r)=>s+(Number(r.amount)||0),0);
+  const affT=affs.reduce((s,a)=>(a.refs||0)*(a.price||0)*(a.comm||0)/100+s,0);
+  const bizInc=incT+affT;
+  const totalIncome=sNet+bizInc;
+
+  const bizET=bizR.reduce((s,r)=>s+(Number(r.amount)||0),0);
+  const taxBase=salary+bizET;
+  const taxAmt=taxBase*((Number(taxes.vat)||0)+(Number(taxes.income)||0)+(Number(taxes.ss)||0))/100;
+  const needed=salary+bizET+taxAmt;
+  const gap=totalIncome-needed;
+
+  const idealIncome=(ideal.skool||0)+(ideal.biz||0);
+  const idealExp=(ideal.salary||salary)+(ideal.expenses||(bizET+taxAmt));
+  const goalIncome=idealIncome||needed;
+
+  const projAddRev=comms.reduce((s,c)=>{
+    const pc=projComms[c.id]||{};
+    const nm=pc.newMembers||0, curP=commPrice(c), np=pc.newPrice||curP;
+    const cr=c.plan==='hobby'?.10:.029;
+    return s+nm*np*(1-cr);
+  },0);
+  const combTotal=sNet+projAddRev+bizInc+(projC||0);
+  const hasProj=Object.values(projComms).some(p=>(p.newMembers||0)>0)||(projC||0)>0;
+
+  const upC=(id,u)=>setComms(cs=>cs.map(c=>c.id===id?u:c));
+  const upA=(id,f,v)=>setAffs(as=>as.map(a=>a.id===id?{...a,[f]:v}:a));
+
+  // Surplus box helper — used in Full Picture
+  const SurplusBox = ({income, expenses}) => {
+    const g=income-expenses, ok=g>=0;
+    return (
+      <div className="rounded-xl p-3 border" style={{
+        background: ok?'rgba(193,255,114,0.10)':'rgba(244,43,166,0.08)',
+        borderColor: ok?'rgba(193,255,114,0.40)':'rgba(244,43,166,0.35)',
+      }}>
+        <div className="text-xs font-bold mb-0.5" style={{color:ok?'#16a34a':P}}>{ok?'Surplus':'Gap'}</div>
+        <div className="text-xl font-bold" style={{color:ok?'#16a34a':P}}>{$n(Math.abs(g))}</div>
+        <div className="text-xs mt-0.5" style={{color:TXT3}}>{$n(Math.abs(g)*12)}/year</div>
+      </div>
+    );
+  };
+
+  return (
+    <div className="min-h-screen bg-black">
+      <Header/>
+
+      {/* Sticky band + tabs */}
+      <div ref={stickyRef} className="fixed left-0 right-0 z-40" style={{top:'44px'}}>
+        <Band needed={needed} sNet={sNet} bizInc={bizInc} comms={comms}/>
+        <Tabs step={step} setStep={setStep}/>
+      </div>
+
+      {/* Gradient glow under sticky — purely decorative */}
+      <div style={{
+        position:'fixed', left:0, right:0, zIndex:39,
+        top: 44 + stickyH,
+        height:32,
+        background:'linear-gradient(to bottom, rgba(244,43,166,0.06), transparent)',
+        pointerEvents:'none',
+      }}/>
+
+      {/* Dynamic spacer */}
+      <div style={{height: 44 + stickyH + 16}}/>
+
+      <div className="max-w-2xl mx-auto px-4 pb-16">
+
+        {/* ══ STEP 0: Your Life ═══════════════════ */}
+        {step===0&&(
+          <div className="fade-up">
+            <p className="text-sm leading-relaxed mb-5" style={{color:'#9ca3af'}}>
+              Start with your real life — what your business actually needs to sustain.
+            </p>
+            <div className="rounded-2xl p-5 border" style={{...CARD, borderColor:'rgba(244,43,166,0.25)'}}>
+              {/* Gradient accent bar */}
+              <div className="h-1 -mx-5 -mt-5 mb-5 rounded-t-2xl" style={{background:'linear-gradient(to right,#f42ba6,#a855f7)'}}/>
+              <div className="text-xs font-bold uppercase tracking-widest mb-4" style={{color:P}}>Personal Baseline</div>
+
+              <SecLabel t="Monthly Expenses" col={P}/>
+              <p className="text-xs mb-3" style={{color:TXT3}}>Rent, food, transport, insurance — everything your life needs.</p>
+              <EList rows={expR} setRows={setExpR} add="Add expense"/>
+
+              <SecLabel t="Savings" col={P}/>
+              <p className="text-xs mb-3" style={{color:TXT3}}>Peace of mind and future you. These are needs, not luxuries.</p>
+              <EList rows={savR} setRows={setSavR} add="Add savings goal"/>
+
+              <SecLabel t="Donations & Giving" col={P}/>
+              <p className="text-xs mb-3" style={{color:TXT3}}>If giving is part of your values, it belongs in your baseline.</p>
+              <EList rows={donR} setRows={setDonR} add="Add giving commitment"/>
+
+              {persT>0&&(
+                <div className="flex justify-between items-center mt-5 pt-4 border-t" style={{borderColor:'rgba(244,43,166,0.20)'}}>
+                  <div>
+                    <div className="text-sm font-bold" style={{color:P}}>Your monthly baseline</div>
+                    <div className="text-xs mt-0.5" style={{color:TXT3}}>
+                      expenses {$n(expT)} · savings {$n(savT)} · giving {$n(donT)}
+                    </div>
+                  </div>
+                  <span className="text-2xl font-bold" style={{color:P}}>{$n(persT)}</span>
+                </div>
+              )}
+            </div>
+            <NavButtons step={step} setStep={setStep}/>
+          </div>
+        )}
+
+        {/* ══ STEP 1: Your Business ═══════════════ */}
+        {step===1&&(
+          <div className="fade-up">
+            <p className="text-sm leading-relaxed mb-5" style={{color:'#9ca3af'}}>
+              All your income sources and all your costs in one place.
+            </p>
+
+            {/* Income card */}
+            <div className="rounded-2xl p-5 border mb-4" style={{...CARD, borderColor:'rgba(44,184,176,0.30)'}}>
+              <div className="h-1 -mx-5 -mt-5 mb-5 rounded-t-2xl" style={{background:'linear-gradient(to right,#2cb8b0,#c1ff72)'}}/>
+              <div className="text-xs font-bold uppercase tracking-widest mb-4" style={{color:T}}>Income</div>
+
+              <SecLabel t="Skool Communities"/>
+              <p className="text-xs mb-3" style={{color:TXT3}}>
+                Hobby: $9.99/mo + 10% commission · Pro: $99/mo + 2.9% commission · Break-even at $1,254/mo.
+              </p>
+              {comms.map(c=>(
+                <CommCard key={c.id} c={c} onUpdate={u=>upC(c.id,u)}
+                  onRemove={()=>setComms(cs=>cs.filter(x=>x.id!==c.id))}/>
+              ))}
+              {comms.length<3&&(
+                <button onClick={()=>setComms(cs=>[...cs,newComm('Community '+(cs.length+1))])}
+                  className="w-full rounded-xl py-2.5 text-xs font-semibold hover:opacity-80 mb-2 transition-opacity"
+                  style={{border:`1.5px dashed rgba(44,184,176,0.35)`,color:T,background:'transparent',cursor:'pointer',fontFamily:'Poppins,sans-serif'}}>
+                  + Add another community
+                </button>
+              )}
+              {sNet>0&&(
+                <div className="flex justify-between pt-2 border-t text-xs" style={{borderColor:'rgba(44,184,176,0.20)',color:TXT3}}>
+                  <span>Total Skool net</span>
+                  <span className="font-bold" style={{color:T}}>{$n(sNet)}/mo</span>
+                </div>
+              )}
+
+              <SecLabel t="Offers & Services"/>
+              <p className="text-xs mb-3" style={{color:TXT3}}>Coaching, sessions, retreats, OTOs, digital products.</p>
+              <EList rows={incR} setRows={setIncR} add="Add offer or service"/>
+
+              <SecLabel t="Affiliate Commissions"/>
+              <p className="text-xs mb-3" style={{color:TXT3}}>Product price × your % × monthly referrals = your monthly income.</p>
+              <div className="grid gap-1.5 mb-2 items-end" style={{gridTemplateColumns:'1fr 64px 52px 52px auto'}}>
+                <FieldLabel t="Affiliate"/><FieldLabel t="Price $"/><FieldLabel t="Comm %"/><FieldLabel t="Refs/mo"/><span/>
+              </div>
+              {affs.map(a=>(
+                <div key={a.id} className="grid gap-1.5 mb-2 items-center" style={{gridTemplateColumns:'1fr 64px 52px 52px auto'}}>
+                  <input className="inp" style={{textAlign:'left'}} value={a.name}
+                    onChange={e=>upA(a.id,'name',e.target.value)} placeholder="Affiliate name"/>
+                  <NI val={a.price} set={v=>upA(a.id,'price',v)}/>
+                  <NI val={a.comm} set={v=>upA(a.id,'comm',v)}/>
+                  <NI val={a.refs} set={v=>upA(a.id,'refs',v)}/>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-bold min-w-12 text-right" style={{color:T}}>
+                      {$n((a.refs||0)*(a.price||0)*(a.comm||0)/100)}
+                    </span>
+                    <button onClick={()=>setAffs(as=>as.filter(x=>x.id!==a.id))}
+                      style={{background:'none',border:'none',cursor:'pointer',color:'#d1d5db',fontSize:18,lineHeight:1}}
+                      onMouseEnter={e=>e.target.style.color='#9ca3af'} onMouseLeave={e=>e.target.style.color='#d1d5db'}>×</button>
+                  </div>
+                </div>
+              ))}
+              <button onClick={()=>setAffs(as=>[...as,newAff()])}
+                style={{background:'none',border:'none',cursor:'pointer',color:T,fontFamily:'Poppins,sans-serif',fontSize:12,fontWeight:600}}>
+                + Add affiliate
+              </button>
+
+              {totalIncome>0&&(
+                <div className="flex justify-between items-center mt-5 pt-4 border-t" style={{borderColor:'rgba(44,184,176,0.20)'}}>
+                  <span className="font-bold" style={{color:T}}>Total monthly income</span>
+                  <span className="text-2xl font-bold" style={{color:T}}>{$n(totalIncome)}</span>
+                </div>
+              )}
+            </div>
+
+            {/* Expenses card */}
+            <div className="rounded-2xl p-5 border" style={{...CARD, borderColor:'rgba(225,29,72,0.25)'}}>
+              <div className="h-1 -mx-5 -mt-5 mb-5 rounded-t-2xl" style={{background:'linear-gradient(to right,#e11d48,#f97316)'}}/>
+              <div className="text-xs font-bold uppercase tracking-widest mb-4" style={{color:RED}}>Expenses</div>
+
+              <SecLabel t="Your Salary — Profit First" col={RED}/>
+              <p className="text-xs mb-2" style={{color:TXT3}}>Pay yourself first. Your first allocation before anything else.</p>
+              {persT>0&&(
+                <p className="text-xs mb-3" style={{color:TXT3}}>
+                  Personal baseline: <strong style={{color:salary>0&&salary<persT?RED:T}}>{$n(persT)}/mo</strong>
+                  {salary>0&&salary>=persT?' — covered ✓':salary>0?' — short by '+$n(persT-salary):''}
+                </p>
+              )}
+              <div className="flex items-center gap-2 mb-2">
+                <span style={{color:'#9ca3af'}}>$</span>
+                <input type="number" className="inp flex-1 font-bold" style={{textAlign:'left',fontSize:16}}
+                  value={salary===0?'':salary} placeholder="Your monthly salary"
+                  onChange={e=>setSalary(parseFloat(e.target.value)||0)}/>
+                <span className="text-sm" style={{color:TXT3}}>/mo</span>
+              </div>
+
+              <SecLabel t="Fixed Business Expenses" col={RED}/>
+              <p className="text-xs mb-3" style={{color:TXT3}}>Tools and subscriptions you pay regardless of revenue.</p>
+              <EList rows={bizR} setRows={setBizR} add="Add expense"/>
+
+              <SecLabel t="Tax Obligations" col={RED}/>
+              <p className="text-xs mb-3" style={{color:TXT3}}>% applied on {$n(taxBase)}/mo. Adjust to match your country.</p>
+              {[['VAT / Sales Tax','vat'],['Income Tax','income'],['Social Security','ss']].map(([label,key])=>(
+                <div key={key} className="flex items-center justify-between py-2 border-b" style={{borderColor:DIVD}}>
+                  <span className="text-sm flex-1" style={{color:TXT2}}>{label}</span>
+                  <div className="flex items-center gap-2 shrink-0">
+                    <NI val={taxes[key]||0} set={v=>setTaxes(t=>({...t,[key]:v}))} st={{width:52}}/>
+                    <span className="text-xs w-3" style={{color:TXT3}}>%</span>
+                    <span className="text-xs font-bold min-w-12 text-right" style={{color:RED}}>
+                      {$n(taxBase*(taxes[key]||0)/100)}
+                    </span>
+                  </div>
+                </div>
+              ))}
+
+              {needed>0&&(
+                <div className="flex justify-between items-center mt-5 pt-4 border-t" style={{borderColor:'rgba(225,29,72,0.20)'}}>
+                  <div>
+                    <div className="font-bold" style={{color:RED}}>Total monthly expenses</div>
+                    <div className="text-xs mt-0.5" style={{color:TXT3}}>salary {$n(salary)} · ops {$n(bizET)} · taxes {$n(taxAmt)}</div>
+                  </div>
+                  <span className="text-2xl font-bold" style={{color:RED}}>{$n(needed)}</span>
+                </div>
+              )}
+            </div>
+
+            <NavButtons step={step} setStep={setStep}/>
+          </div>
+        )}
+
+        {/* ══ STEP 2: Full Picture ════════════════ */}
+        {step===2&&(
+          <div className="fade-up">
+            <p className="text-sm leading-relaxed mb-5" style={{color:'#9ca3af'}}>
+              Your current reality vs your ideal. Then play with the levers to see exactly how to get there.
+            </p>
+
+            {/* Current vs Goal */}
+            <div className="grid grid-cols-2 gap-3 mb-5">
+
+              {/* Current */}
+              <div className="rounded-2xl overflow-hidden border" style={{...CARD, borderColor:'rgba(44,184,176,0.30)'}}>
+                <div className="px-4 py-3 border-b" style={{background:'linear-gradient(135deg,rgba(44,184,176,0.10),rgba(193,255,114,0.06))',borderColor:'rgba(44,184,176,0.20)'}}>
+                  <div className="font-bold text-sm grad-teal">Right now</div>
+                  <div className="text-xs mt-0.5" style={{color:TXT3}}>Based on what you filled in</div>
+                </div>
+                <div className="p-4">
+                  {comms.map(c=>{const{net}=cCalc(c);return net>0&&(
+                    <div key={c.id} className="flex justify-between mb-1.5">
+                      <span className="text-xs truncate max-w-24" style={{color:TXT3}}>{c.name}</span>
+                      <span className="text-xs font-bold shrink-0 ml-1" style={{color:T}}>{$n(net)}</span>
+                    </div>
+                  );})}
+                  {bizInc>0&&(
+                    <div className="flex justify-between mb-1.5">
+                      <span className="text-xs" style={{color:TXT3}}>Offers & affiliates</span>
+                      <span className="text-xs font-bold" style={{color:T}}>{$n(bizInc)}</span>
+                    </div>
+                  )}
+                  <div className="border-t my-2" style={{borderColor:DIVD}}/>
+                  {[['Salary',$n(salary)],['Fixed exp.',$n(bizET)],['Taxes',$n(taxAmt)]].map(([l,v])=>(
+                    <div key={l} className="flex justify-between mb-1">
+                      <span className="text-xs" style={{color:TXT3}}>{l}</span>
+                      <span className="text-xs font-medium" style={{color:RED}}>−{v}</span>
+                    </div>
+                  ))}
+                  <div className="border-t my-2" style={{borderColor:DIVD}}/>
+                  <div className="flex justify-between mb-1">
+                    <span className="text-xs" style={{color:TXT3}}>Income</span>
+                    <span className="text-xs font-bold" style={{color:T}}>{$n(totalIncome)}</span>
+                  </div>
+                  <div className="flex justify-between mb-3">
+                    <span className="text-xs" style={{color:TXT3}}>Expenses</span>
+                    <span className="text-xs font-bold" style={{color:RED}}>−{$n(needed)}</span>
+                  </div>
+                  <SurplusBox income={totalIncome} expenses={needed}/>
+                </div>
+              </div>
+
+              {/* Goal */}
+              <div className="rounded-2xl overflow-hidden border" style={{...CARD, borderColor:'rgba(244,43,166,0.30)'}}>
+                <div className="px-4 py-3 border-b" style={{background:'linear-gradient(135deg,rgba(244,43,166,0.08),rgba(168,85,247,0.06))',borderColor:'rgba(244,43,166,0.20)'}}>
+                  <div className="font-bold text-sm grad-pink">The goal</div>
+                  <div className="text-xs mt-0.5" style={{color:TXT3}}>What does ideal look like?</div>
+                </div>
+                <div className="p-4">
+                  {[['Skool income / mo','skool'],['Offers & affiliates / mo','biz']].map(([l,k])=>(
+                    <div key={k} className="mb-3">
+                      <div className="text-xs uppercase tracking-wider mb-1" style={{color:TXT3}}>{l}</div>
+                      <NI val={ideal[k]} set={v=>setIdeal(i=>({...i,[k]:v}))} full st={{textAlign:'left'}}/>
+                    </div>
+                  ))}
+                  <div className="border-t my-2" style={{borderColor:DIVD}}/>
+                  <div className="mb-3">
+                    <div className="text-xs uppercase tracking-wider mb-1" style={{color:TXT3}}>Ideal salary / mo</div>
+                    <NI val={ideal.salary} set={v=>setIdeal(i=>({...i,salary:v}))} full st={{textAlign:'left'}}/>
+                  </div>
+                  <div className="mb-4">
+                    <div className="text-xs uppercase tracking-wider mb-1" style={{color:TXT3}}>Business costs excl. salary</div>
+                    <NI val={ideal.expenses} set={v=>setIdeal(i=>({...i,expenses:v}))} full st={{textAlign:'left'}}
+                      ph={String(Math.round(bizET+taxAmt))}/>
+                  </div>
+                  <div className="flex justify-between mb-1">
+                    <span className="text-xs" style={{color:TXT3}}>Income</span>
+                    <span className="text-xs font-bold" style={{color:T}}>{$n(idealIncome)}</span>
+                  </div>
+                  <div className="flex justify-between mb-3">
+                    <span className="text-xs" style={{color:TXT3}}>Expenses</span>
+                    <span className="text-xs font-bold" style={{color:RED}}>−{$n(idealExp)}</span>
+                  </div>
+                  <SurplusBox income={idealIncome} expenses={idealExp}/>
+                </div>
+              </div>
+            </div>
+
+            {/* Comparison bar */}
+            {idealIncome>0&&(
+              <div className="rounded-2xl p-4 border mb-5" style={{...CARD, borderColor:DIVD}}>
+                <div className="text-xs font-bold uppercase tracking-widest mb-3" style={{color:TXT3}}>Current vs Goal</div>
+                <div className="grid grid-cols-3 gap-3">
+                  {[
+                    {l:'Current',    v:$n(totalIncome), c:T},
+                    {l:'Goal',       v:$n(idealIncome), c:P},
+                    {l:totalIncome>=idealIncome?'Above goal':'To reach goal',
+                     v:$n(Math.abs(idealIncome-totalIncome)),
+                     c:totalIncome>=idealIncome?'#16a34a':P},
+                  ].map(({l,v,c})=>(
+                    <div key={l} className="text-center p-3 rounded-xl border" style={{background:'#f9fafb',borderColor:DIVD}}>
+                      <div className="text-xs uppercase tracking-wider mb-1" style={{color:TXT3}}>{l}</div>
+                      <div className="text-base font-bold" style={{color:c}}>{v}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Projections */}
+            {(totalIncome>0||needed>0)&&(
+              <div>
+                <div className="text-xs font-bold uppercase tracking-widest mb-1" style={{color:'#9ca3af'}}>What if you...</div>
+                <p className="text-xs mb-4 leading-relaxed" style={{color:'#6b7280'}}>
+                  Existing members keep the price they signed up at. New members pay the new price. Adjust everything — combined result updates live.
+                </p>
+
+                {comms.map(c=>{
+                  const curP=commPrice(c), curM=getTM(c.model,c.inp), {net,cr}=cCalc(c);
+                  const pc=projComms[c.id]||{};
+                  const nm=pc.newMembers||0, np=pc.newPrice||curP||0;
+                  const addNet=nm*np*(1-cr);
+                  const upd=(f,v)=>setProjComms(p=>({...p,[c.id]:{...(p[c.id]||{}),[f]:v}}));
+                  return(
+                    <div key={c.id} className="rounded-xl p-4 mb-3 border"
+                      style={{...CARD, borderColor:'rgba(44,184,176,0.25)'}}>
+                      <div className="flex items-center gap-2 mb-2">
+                        <span className="font-bold text-sm" style={{color:TXT}}>{c.name}</span>
+                        <span className="text-xs font-bold px-1.5 rounded-full"
+                          style={{background:c.plan==='pro'?T:P,color:'#000',fontSize:8}}>{c.plan}</span>
+                      </div>
+                      <p className="text-xs mb-3" style={{color:TXT3}}>
+                        Current: <strong style={{color:TXT}}>{curM.toLocaleString()} members</strong> @ <strong style={{color:TXT}}>{$n(curP)}/mo</strong> → <strong style={{color:T}}>{$n(net)}/mo net</strong>
+                      </p>
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <div className="text-xs mb-1" style={{color:TXT3}}>New members to add</div>
+                          <div className="flex items-center gap-1.5">
+                            <span style={{color:'#9ca3af'}}>+</span>
+                            <NI val={pc.newMembers||0} set={v=>upd('newMembers',v)} full st={{textAlign:'left'}}/>
+                          </div>
+                        </div>
+                        <div>
+                          <div className="text-xs mb-1" style={{color:TXT3}}>New member price</div>
+                          <div className="flex items-center gap-1.5">
+                            <span style={{color:'#9ca3af'}}>$</span>
+                            <NI val={pc.newPrice||0} set={v=>upd('newPrice',v)} full st={{textAlign:'left'}} ph={String(Math.round(curP)||0)}/>
+                          </div>
+                        </div>
+                      </div>
+                      {nm>0&&<p className="text-xs mt-2" style={{color:T}}>+{$n(Math.round(addNet))}/mo from {nm} new members @ ${np}/mo — existing {curM} keep ${Math.round(curP)}/mo</p>}
+                    </div>
+                  );
+                })}
+
+                <div className="rounded-xl p-4 mb-4 border" style={{...CARD, borderColor:DIVD}}>
+                  <div className="text-xs font-bold uppercase tracking-widest mb-1" style={{color:T}}>More offers & affiliates</div>
+                  <p className="text-xs mb-3" style={{color:TXT3}}>Additional monthly income from new offers, sessions, or affiliates</p>
+                  <div className="flex items-center gap-2">
+                    <span style={{color:'#9ca3af'}}>+$</span>
+                    <NI val={projC} set={v=>setProjC(v)} full st={{textAlign:'left'}}/>
+                    <span className="text-sm" style={{color:TXT3}}>/mo</span>
+                  </div>
+                </div>
+
+                {hasProj&&(()=>{
+                  const cg=combTotal-needed, cok=cg>=0;
+                  const pct=goalIncome>0?Math.min(100,Math.round(combTotal/goalIncome*100)):0;
+                  const summ=comms.map(c=>{const pc=projComms[c.id]||{};const nm=pc.newMembers||0;return nm>0?'+'+nm+' to '+c.name:null}).filter(Boolean).join(', ');
+                  return(
+                    <div className="rounded-2xl overflow-hidden border"
+                      style={{...CARD, borderColor:cok?'rgba(44,184,176,0.35)':'rgba(244,43,166,0.35)'}}>
+                      <div className="px-5 py-4 flex justify-between items-center border-b"
+                        style={{
+                          background: cok
+                            ?'linear-gradient(135deg,rgba(44,184,176,0.08),rgba(193,255,114,0.05))'
+                            :'linear-gradient(135deg,rgba(244,43,166,0.07),rgba(168,85,247,0.05))',
+                          borderColor: cok?'rgba(44,184,176,0.20)':'rgba(244,43,166,0.20)',
+                        }}>
+                        <div>
+                          <div className={'font-bold text-sm '+(cok?'grad-teal':'grad-pink')}>Combined projection</div>
+                          <div className="text-xs mt-0.5" style={{color:TXT3}}>
+                            {[summ,projC>0&&'+'+$n(projC)+' extra/mo'].filter(Boolean).join(' · ')||'All scenarios'}
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <div className="text-3xl font-bold" style={{color:cok?T:P}}>{$n(combTotal)}/mo</div>
+                          <div className="text-xs" style={{color:TXT3}}>{$n(combTotal*12)}/year</div>
+                        </div>
+                      </div>
+                      <div className="p-5">
+                        <div className="flex justify-between text-xs mb-2" style={{color:TXT3}}>
+                          <span>Progress toward goal ({$n(goalIncome)}/mo)</span>
+                          <span className="font-bold">{pct}%</span>
+                        </div>
+                        <div className="rounded-full h-2.5 mb-5" style={{background:'#e5e7eb'}}>
+                          <div className="rounded-full h-2.5 transition-all duration-500" style={{
+                            width:pct+'%', maxWidth:'100%',
+                            background: cok
+                              ?'linear-gradient(to right,#2cb8b0,#c1ff72)'
+                              :'linear-gradient(to right,#f42ba6,#a855f7)',
+                          }}/>
+                        </div>
+                        <div className="grid grid-cols-3 gap-3 mb-4">
+                          {[
+                            {l:'Skool net',          v:$n(sNet+projAddRev),    c:T},
+                            {l:'Offers & affiliates', v:$n(bizInc+(projC||0)), c:T},
+                            {l:cok?'Surplus':'Gap',   v:$n(Math.abs(cg)),      c:cok?'#16a34a':P},
+                          ].map(({l,v,c})=>(
+                            <div key={l} className="text-center p-3 rounded-xl border" style={{background:'#f9fafb',borderColor:DIVD}}>
+                              <div className="text-xs uppercase tracking-wider mb-1" style={{color:TXT3}}>{l}</div>
+                              <div className="text-sm font-bold" style={{color:c}}>{v}</div>
+                            </div>
+                          ))}
+                        </div>
+                        {cok
+                          ?<div className="text-center text-sm font-semibold" style={{color:T}}>Goal reached ✓ — {$n(cg)}/mo surplus</div>
+                          :<div className="text-center text-sm" style={{color:TXT3}}>Still {$n(Math.abs(cg))} away — keep adjusting the levers above.</div>
+                        }
+                      </div>
+                    </div>
+                  );
+                })()}
+              </div>
+            )}
+
+            <NavButtons step={step} setStep={setStep}/>
+          </div>
+        )}
+
+        <Footer/>
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.render(React.createElement(App), document.getElementById('root'));
+</script>
+</body>
+</html>
