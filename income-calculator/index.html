@@ -61,6 +61,14 @@
   ::-webkit-scrollbar { width: 4px; height: 4px; }
   ::-webkit-scrollbar-thumb { background: #374151; border-radius: 4px; }
 
+  @media print {
+    * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+    body { background: white !important; }
+    .no-print { display: none !important; }
+    .print-only { display: block !important; }
+    @page { margin: 14mm 18mm; size: A4; }
+  }
+
   @media (min-width: 1024px) {
     .inp { font-size: 14px; padding: 9px 12px; }
     .band-inner { max-width: 1140px; margin: 0 auto; }
@@ -460,14 +468,107 @@ const NavButtons = ({step, setStep}) => {
   );
 };
 
+// ── Print View ────────────────────────────────
+const PrintView = ({needed,persT,expT,savT,donT,expR,savR,donR,
+  sNet,bizInc,incT,affT,totalIncome,bizET,taxAmt,salary,taxes,taxBase,
+  comms,affs,incR,bizR,gap}) => {
+  const ok=gap>=0;
+  const date=new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});
+  const Row=({label,value,bold,color,light})=>(
+    <div style={{display:'flex',justifyContent:'space-between',padding:'5px 0',borderBottom:'1px solid #f3f4f6'}}>
+      <span style={{fontSize:11,color:light?'#9ca3af':'#374151',fontWeight:bold?600:400}}>{label}</span>
+      <span style={{fontSize:11,fontWeight:bold?700:500,color:color||'#111827'}}>{value}</span>
+    </div>
+  );
+  const Sec=({title,color,children})=>(
+    <div style={{marginBottom:18,breakInside:'avoid'}}>
+      <div style={{borderLeft:`3px solid ${color}`,paddingLeft:8,marginBottom:8}}>
+        <div style={{fontSize:9,fontWeight:700,textTransform:'uppercase',letterSpacing:'0.09em',color}}>{title}</div>
+      </div>
+      {children}
+    </div>
+  );
+  return (
+    <div className="print-only" style={{display:'none',fontFamily:'Poppins,sans-serif',color:'#111',background:'white'}}>
+      {/* Header */}
+      <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-end',paddingBottom:12,marginBottom:20,borderBottom:'2.5px solid #f42ba6'}}>
+        <div>
+          <div style={{fontFamily:'Berkshire Swash,cursive',fontSize:22,color:'#f42ba6',lineHeight:1}}>Prosperity Pact</div>
+          <div style={{fontSize:10,color:'#6b7280',marginTop:3}}>Soul Business Income Calculator</div>
+        </div>
+        <div style={{fontSize:10,color:'#9ca3af'}}>{date}</div>
+      </div>
+      {/* Summary boxes */}
+      <div style={{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:10,marginBottom:22}}>
+        {[
+          {l:'Monthly Target', v:$n(needed),        c:'#111827', bg:'#f9fafb',             bc:'#e5e7eb'},
+          {l:'Skool Income',   v:$n(sNet),           c:T,         bg:'rgba(44,184,176,0.07)',bc:'rgba(44,184,176,0.35)'},
+          {l:'Other Income',   v:$n(bizInc),         c:T,         bg:'rgba(44,184,176,0.05)',bc:'rgba(44,184,176,0.25)'},
+          {l:ok?'Surplus':'Gap',v:$n(Math.abs(gap)), c:ok?'#16a34a':P, bg:ok?'rgba(22,163,74,0.06)':'rgba(244,43,166,0.06)', bc:ok?'rgba(22,163,74,0.30)':'rgba(244,43,166,0.30)'},
+        ].map(({l,v,c,bg,bc},i)=>(
+          <div key={i} style={{border:`1.5px solid ${bc}`,borderRadius:10,padding:'10px 12px',background:bg}}>
+            <div style={{fontSize:8,fontWeight:700,textTransform:'uppercase',letterSpacing:'0.09em',color:'#9ca3af',marginBottom:5}}>{l}</div>
+            <div style={{fontSize:20,fontWeight:700,color:c,lineHeight:1}}>{v}</div>
+          </div>
+        ))}
+      </div>
+      {/* Two columns */}
+      <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:24}}>
+        <div>
+          <Sec title="Personal Baseline" color={P}>
+            {[...expR,...savR,...donR].filter(r=>Number(r.amount)>0).map(r=>(
+              <Row key={r.id} label={r.label} value={$n(r.amount)}/>
+            ))}
+            <Row label="Total baseline" value={$n(persT)} bold color={P}/>
+          </Sec>
+          <Sec title="Income" color={T}>
+            {comms.map(c=>{const{net}=cCalc(c);return net>0&&<Row key={c.id} label={c.name+' ('+c.plan+')'} value={$n(net)+'/mo'}/>;})}
+            {incR.filter(r=>Number(r.amount)>0).map(r=><Row key={r.id} label={r.label} value={$n(r.amount)}/>)}
+            {affs.filter(a=>(a.refs||0)*(a.price||0)>0).map(a=>(
+              <Row key={a.id} label={(a.name||'Affiliate')+' ('+a.comm+'%)'} value={$n((a.refs||0)*(a.price||0)*(a.comm||0)/100)}/>
+            ))}
+            <Row label="Total income" value={$n(totalIncome)} bold color={T}/>
+          </Sec>
+        </div>
+        <div>
+          <Sec title="Business Expenses" color='#df1737'>
+            <Row label="Your salary" value={$n(salary)}/>
+            {bizR.filter(r=>Number(r.amount)>0).map(r=><Row key={r.id} label={r.label} value={$n(r.amount)}/>)}
+            <Row label={`Taxes (${(Number(taxes.vat)||0)+(Number(taxes.income)||0)+(Number(taxes.ss)||0)}%)`} value={$n(taxAmt)}/>
+            <Row label="Total expenses" value={$n(needed)} bold color='#df1737'/>
+          </Sec>
+          <Sec title={ok?'Surplus':'Gap'} color={ok?'#16a34a':P}>
+            <Row label="Monthly" value={$n(Math.abs(gap))} bold color={ok?'#16a34a':P}/>
+            <Row label="Annual" value={$n(Math.abs(gap)*12)} color={ok?'#16a34a':P}/>
+            <Row light label="Income" value={$n(totalIncome)}/>
+            <Row light label="Expenses" value={$n(needed)}/>
+          </Sec>
+        </div>
+      </div>
+      {/* Footer */}
+      <div style={{marginTop:20,paddingTop:10,borderTop:'1px solid #e5e7eb',display:'flex',justifyContent:'space-between',alignItems:'center'}}>
+        <div style={{fontSize:9,color:'#9ca3af'}}>laubrizuela.com/income-calculator · Prosperity Pact © 2026</div>
+        <div style={{fontSize:10,fontWeight:700,color:ok?'#16a34a':P}}>{ok?'On track — '+$n(gap)+'/mo surplus':'Gap of '+$n(Math.abs(gap))+'/mo — keep building'}</div>
+      </div>
+    </div>
+  );
+};
+
 // ── Header ────────────────────────────────────
 const Header = () => (
-  <div className="fixed top-0 left-0 right-0 z-50" style={{backdropFilter:'blur(12px)',backgroundColor:'rgba(0,0,0,0.95)',borderBottom:'1px solid #1a1a2e'}}>
+  <div className="no-print fixed top-0 left-0 right-0 z-50" style={{backdropFilter:'blur(12px)',backgroundColor:'rgba(0,0,0,0.95)',borderBottom:'1px solid #1a1a2e'}}>
     <div className="main-wrap mx-auto px-4 lg:px-8 py-2.5 flex items-center justify-between">
       <a href="https://laubrizuela.com" className="brand-font text-lg" style={{color:P}}>Prosperity Pact</a>
-      <a href="https://www.skool.com/prosperity-pact" target="_blank" rel="noopener noreferrer"
-        className="px-4 py-1.5 rounded-full text-xs font-bold transition-all hover:scale-105"
-        style={{backgroundColor:L, color:'#000'}}>Join the community</a>
+      <div className="flex items-center gap-3">
+        <button onClick={()=>window.print()}
+          className="px-4 py-1.5 rounded-full text-xs font-bold transition-all hover:scale-105"
+          style={{background:'transparent',border:`1.5px solid ${T}`,color:T,cursor:'pointer',fontFamily:'Poppins,sans-serif'}}>
+          ↓ Download PDF
+        </button>
+        <a href="https://www.skool.com/prosperity-pact" target="_blank" rel="noopener noreferrer"
+          className="px-4 py-1.5 rounded-full text-xs font-bold transition-all hover:scale-105"
+          style={{backgroundColor:L, color:'#000'}}>Join the community</a>
+      </div>
     </div>
   </div>
 );
@@ -558,7 +659,15 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-black">
+    <div>
+    <PrintView
+      needed={needed} persT={persT} expT={expT} savT={savT} donT={donT}
+      expR={expR} savR={savR} donR={donR}
+      sNet={sNet} bizInc={bizInc} incT={incT} affT={affT} totalIncome={totalIncome}
+      bizET={bizET} taxAmt={taxAmt} salary={salary} taxes={taxes} taxBase={taxBase}
+      comms={comms} affs={affs} incR={incR} bizR={bizR} gap={gap}
+    />
+    <div className="no-print min-h-screen bg-black">
       <Header/>
 
       {/* Sticky band + tabs */}
@@ -996,6 +1105,7 @@ function App() {
 
         <Footer/>
       </div>
+    </div>
     </div>
   );
 }
