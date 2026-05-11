@@ -370,41 +370,53 @@ const CommCard = ({c, onUpdate, onRemove}) => {
 // ── Sticky Summary Band ────────────────────────
 const Band = ({needed, sNet, bizInc, comms}) => {
   const tot=sNet+bizInc, gap=tot-needed, ok=gap>=0;
+  const stats = [
+    {l:'Monthly target', v:$n(needed),        c:'#d1d5db', bg:'rgba(255,255,255,0.03)', border:'rgba(255,255,255,0.06)'},
+    {l:'Skool income',   v:$n(sNet),           c:T,         bg:`rgba(44,184,176,0.07)`,  border:`rgba(44,184,176,0.18)`},
+    {l:'Other income',   v:$n(bizInc),         c:T,         bg:`rgba(44,184,176,0.05)`,  border:`rgba(44,184,176,0.12)`},
+    {l:ok?'Surplus':'Gap', v:$n(Math.abs(gap)),c:ok?L:P,    bg:ok?'rgba(193,255,114,0.07)':'rgba(244,43,166,0.08)', border:ok?'rgba(193,255,114,0.25)':'rgba(244,43,166,0.25)'},
+  ];
   return (
-    <div style={{background:'rgba(5,5,10,0.97)', backdropFilter:'blur(20px)', borderBottom:'1px solid #1f2937'}}>
+    <div style={{background:'rgba(4,4,12,0.98)', backdropFilter:'blur(24px)', borderBottom:'1px solid #1a1a2e'}}>
+      {/* Gradient accent line */}
+      <div style={{height:2, background:'linear-gradient(to right,#f42ba6,#a855f7,#2cb8b0,#c1ff72)'}}/>
       <div className="band-inner">
-      <div className="flex" style={{borderBottom:'1px solid #1a1a2e'}}>
-        {[
-          {l:'You need',        v:$n(needed),          c:'#e5e7eb'},
-          {l:'Skool',           v:$n(sNet),            c:T},
-          {l:'Other',           v:$n(bizInc),          c:T},
-          {l:ok?'Surplus':'Gap',v:$n(Math.abs(gap)),   c:ok?L:P},
-        ].map(({l,v,c},i)=>(
-          <div key={i} className="flex-1 px-3 py-2.5 border-r last:border-r-0" style={{borderColor:'#1a1a2e'}}>
-            <div style={{fontSize:9,fontWeight:700,textTransform:'uppercase',letterSpacing:'0.08em',color:'#4b5563',marginBottom:2}}>{l}</div>
-            <div className="font-bold text-base leading-tight" style={{color:c}}>{v}</div>
-          </div>
-        ))}
-      </div>
-      <div className="flex overflow-x-auto" style={{scrollbarWidth:'none'}}>
-        {comms.length===0&&<div className="px-4 py-2.5 text-xs" style={{color:'#374151'}}>Add communities in Your Business →</div>}
-        {comms.map((c,i)=>{
-          const {net}=cCalc(c), tiers=bandTiers(c);
-          return (
-            <div key={c.id} className="shrink-0 px-4 py-2 border-r" style={{borderColor:'#111827'}}>
-              <div className="flex items-center gap-1.5 mb-0.5">
-                <span className="text-xs font-semibold max-w-28 truncate" style={{color:'#9ca3af'}}>{c.name||'Community '+(i+1)}</span>
-                <span className="text-xs font-bold px-1.5 rounded-full" style={{background:c.plan==='pro'?T:P,color:'#000',fontSize:8}}>{c.plan}</span>
-              </div>
-              <div className="mb-1">
-                {tiers.length===0&&<span className="text-xs" style={{color:'#374151'}}>No members yet</span>}
-                {tiers.map((t,ti)=><div key={ti} className="text-xs" style={{color:'#6b7280'}}>{t.mb.toLocaleString()}{t.tag?' ('+t.tag+')':''}{t.pr?' @ $'+t.pr:''}</div>)}
-              </div>
-              <div className="text-sm font-bold" style={{color:net>0?T:'#374151'}}>{$n(net)}/mo</div>
+        {/* Stats row */}
+        <div className="flex gap-2 px-4 py-3">
+          {stats.map(({l,v,c,bg,border},i)=>(
+            <div key={i} className="flex-1 rounded-xl px-3 py-2.5 flex flex-col justify-between"
+              style={{background:bg, border:`1px solid ${border}`, minWidth:0}}>
+              <div style={{fontSize:10,fontWeight:700,textTransform:'uppercase',letterSpacing:'0.09em',color:'#6b7280',marginBottom:4,whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'}}>{l}</div>
+              <div className="font-bold leading-none" style={{color:c,fontSize:'clamp(14px,1.5vw,22px)'}}>{v}</div>
             </div>
-          );
-        })}
-      </div>
+          ))}
+        </div>
+        {/* Communities row */}
+        {comms.length>0&&(
+          <div className="flex overflow-x-auto gap-2 px-4 pb-3" style={{scrollbarWidth:'none'}}>
+            {comms.map((c,i)=>{
+              const {net}=cCalc(c), tiers=bandTiers(c);
+              return (
+                <div key={c.id} className="shrink-0 rounded-lg px-3 py-2 flex items-center gap-3"
+                  style={{background:'rgba(44,184,176,0.06)', border:'1px solid rgba(44,184,176,0.15)'}}>
+                  <div>
+                    <div className="flex items-center gap-1.5 mb-0.5">
+                      <span className="text-xs font-semibold" style={{color:'#9ca3af'}}>{c.name||'Community '+(i+1)}</span>
+                      <span className="font-bold px-1.5 rounded-full" style={{background:c.plan==='pro'?T:P,color:'#000',fontSize:8}}>{c.plan}</span>
+                    </div>
+                    <div className="text-xs" style={{color:'#4b5563'}}>
+                      {tiers.length===0?'No members yet':tiers.map((t,ti)=><span key={ti}>{t.mb.toLocaleString()}{t.tag?' ('+t.tag+')':''}{t.pr?' @ $'+t.pr:''}</span>)}
+                    </div>
+                  </div>
+                  <div className="text-sm font-bold shrink-0" style={{color:net>0?T:'#374151'}}>{$n(net)}/mo</div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+        {comms.length===0&&(
+          <div className="px-4 pb-3 text-xs" style={{color:'#374151'}}>Add communities in Your Business →</div>
+        )}
       </div>
     </div>
   );
