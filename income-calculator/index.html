@@ -60,6 +60,13 @@
 
   ::-webkit-scrollbar { width: 4px; height: 4px; }
   ::-webkit-scrollbar-thumb { background: #374151; border-radius: 4px; }
+
+  @media (min-width: 1024px) {
+    .inp { font-size: 14px; padding: 9px 12px; }
+    .band-inner { max-width: 1140px; margin: 0 auto; }
+    .main-wrap  { max-width: 1140px; }
+    .step-desc  { font-size: 15px; }
+  }
 </style>
 <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
 <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
@@ -365,6 +372,7 @@ const Band = ({needed, sNet, bizInc, comms}) => {
   const tot=sNet+bizInc, gap=tot-needed, ok=gap>=0;
   return (
     <div style={{background:'rgba(5,5,10,0.97)', backdropFilter:'blur(20px)', borderBottom:'1px solid #1f2937'}}>
+      <div className="band-inner">
       <div className="flex" style={{borderBottom:'1px solid #1a1a2e'}}>
         {[
           {l:'You need',        v:$n(needed),          c:'#e5e7eb'},
@@ -397,13 +405,15 @@ const Band = ({needed, sNet, bizInc, comms}) => {
           );
         })}
       </div>
+      </div>
     </div>
   );
 };
 
 // ── Tabs ──────────────────────────────────────
 const Tabs = ({step, setStep}) => (
-  <div className="flex" style={{background:'rgba(5,5,10,0.97)',backdropFilter:'blur(20px)',borderBottom:'1px solid #1a1a2e'}}>
+  <div style={{background:'rgba(5,5,10,0.97)',backdropFilter:'blur(20px)',borderBottom:'1px solid #1a1a2e'}}>
+  <div className="band-inner flex">
     {STEPS.map((s,i)=>(
       <button key={i} onClick={()=>setStep(i)}
         className="flex-1 py-3 text-xs font-semibold transition-all"
@@ -414,6 +424,7 @@ const Tabs = ({step, setStep}) => (
           cursor:'pointer', fontFamily:'Poppins,sans-serif',
         }}>{s}</button>
     ))}
+  </div>
   </div>
 );
 
@@ -440,7 +451,7 @@ const NavButtons = ({step, setStep}) => {
 // ── Header ────────────────────────────────────
 const Header = () => (
   <div className="fixed top-0 left-0 right-0 z-50" style={{backdropFilter:'blur(12px)',backgroundColor:'rgba(0,0,0,0.95)',borderBottom:'1px solid #1a1a2e'}}>
-    <div className="max-w-2xl mx-auto px-4 py-2.5 flex items-center justify-between">
+    <div className="main-wrap mx-auto px-4 lg:px-8 py-2.5 flex items-center justify-between">
       <a href="https://laubrizuela.com" className="brand-font text-lg" style={{color:P}}>Prosperity Pact</a>
       <a href="https://www.skool.com/prosperity-pact" target="_blank" rel="noopener noreferrer"
         className="px-4 py-1.5 rounded-full text-xs font-bold transition-all hover:scale-105"
@@ -556,7 +567,7 @@ function App() {
       {/* Dynamic spacer */}
       <div style={{height: 44 + stickyH + 16}}/>
 
-      <div className="max-w-2xl mx-auto px-4 pb-16">
+      <div className="main-wrap mx-auto px-4 lg:px-8 pb-16">
 
         {/* ══ STEP 0: Your Life ═══════════════════ */}
         {step===0&&(
@@ -569,17 +580,22 @@ function App() {
               <div className="h-1 -mx-5 -mt-5 mb-5 rounded-t-2xl" style={{background:'linear-gradient(to right,#f42ba6,#a855f7)'}}/>
               <div className="text-xs font-bold uppercase tracking-widest mb-4" style={{color:P}}>Personal Baseline</div>
 
-              <SecLabel t="Monthly Expenses" col={P}/>
-              <p className="text-xs mb-3" style={{color:TXT3}}>Rent, food, transport, insurance — everything your life needs.</p>
-              <EList rows={expR} setRows={setExpR} add="Add expense"/>
+              <div className="lg:grid lg:grid-cols-2 lg:gap-8">
+                <div>
+                  <SecLabel t="Monthly Expenses" col={P}/>
+                  <p className="text-xs mb-3" style={{color:TXT3}}>Rent, food, transport, insurance — everything your life needs.</p>
+                  <EList rows={expR} setRows={setExpR} add="Add expense"/>
+                </div>
+                <div>
+                  <SecLabel t="Savings" col={P}/>
+                  <p className="text-xs mb-3" style={{color:TXT3}}>Peace of mind and future you. These are needs, not luxuries.</p>
+                  <EList rows={savR} setRows={setSavR} add="Add savings goal"/>
 
-              <SecLabel t="Savings" col={P}/>
-              <p className="text-xs mb-3" style={{color:TXT3}}>Peace of mind and future you. These are needs, not luxuries.</p>
-              <EList rows={savR} setRows={setSavR} add="Add savings goal"/>
-
-              <SecLabel t="Donations & Giving" col={P}/>
-              <p className="text-xs mb-3" style={{color:TXT3}}>If giving is part of your values, it belongs in your baseline.</p>
-              <EList rows={donR} setRows={setDonR} add="Add giving commitment"/>
+                  <SecLabel t="Donations & Giving" col={P}/>
+                  <p className="text-xs mb-3" style={{color:TXT3}}>If giving is part of your values, it belongs in your baseline.</p>
+                  <EList rows={donR} setRows={setDonR} add="Add giving commitment"/>
+                </div>
+              </div>
 
               {persT>0&&(
                 <div className="flex justify-between items-center mt-5 pt-4 border-t" style={{borderColor:'rgba(244,43,166,0.20)'}}>
@@ -604,8 +620,9 @@ function App() {
               All your income sources and all your costs in one place.
             </p>
 
+            <div className="lg:grid lg:grid-cols-2 lg:gap-6 lg:items-start">
             {/* Income card */}
-            <div className="rounded-2xl p-5 border mb-4" style={{...CARD, borderColor:'rgba(44,184,176,0.30)'}}>
+            <div className="rounded-2xl p-5 border mb-4 lg:mb-0" style={{...CARD, borderColor:'rgba(44,184,176,0.30)'}}>
               <div className="h-1 -mx-5 -mt-5 mb-5 rounded-t-2xl" style={{background:'linear-gradient(to right,#2cb8b0,#c1ff72)'}}/>
               <div className="text-xs font-bold uppercase tracking-widest mb-4" style={{color:T}}>Income</div>
 
@@ -720,6 +737,7 @@ function App() {
                 </div>
               )}
             </div>
+            </div>{/* end lg:grid */}
 
             <NavButtons step={step} setStep={setStep}/>
           </div>
@@ -839,6 +857,7 @@ function App() {
                   Existing members keep the price they signed up at. New members pay the new price. Adjust everything — combined result updates live.
                 </p>
 
+                <div className="lg:grid lg:grid-cols-2 lg:gap-4 lg:items-start">
                 {comms.map(c=>{
                   const curP=commPrice(c), curM=getTM(c.model,c.inp), {net,cr}=cCalc(c);
                   const pc=projComms[c.id]||{};
@@ -846,7 +865,7 @@ function App() {
                   const addNet=nm*np*(1-cr);
                   const upd=(f,v)=>setProjComms(p=>({...p,[c.id]:{...(p[c.id]||{}),[f]:v}}));
                   return(
-                    <div key={c.id} className="rounded-xl p-4 mb-3 border"
+                    <div key={c.id} className="rounded-xl p-4 mb-3 lg:mb-0 border"
                       style={{...CARD, borderColor:'rgba(44,184,176,0.25)'}}>
                       <div className="flex items-center gap-2 mb-2">
                         <span className="font-bold text-sm" style={{color:TXT}}>{c.name}</span>
@@ -877,7 +896,7 @@ function App() {
                   );
                 })}
 
-                <div className="rounded-xl p-4 mb-4 border" style={{...CARD, borderColor:DIVD}}>
+                <div className="rounded-xl p-4 mb-3 lg:mb-0 border" style={{...CARD, borderColor:DIVD}}>
                   <div className="text-xs font-bold uppercase tracking-widest mb-1" style={{color:T}}>More offers & affiliates</div>
                   <p className="text-xs mb-3" style={{color:TXT3}}>Additional monthly income from new offers, sessions, or affiliates</p>
                   <div className="flex items-center gap-2">
@@ -886,6 +905,7 @@ function App() {
                     <span className="text-sm" style={{color:TXT3}}>/mo</span>
                   </div>
                 </div>
+                </div>{/* end lg:grid projections */}
 
                 {hasProj&&(()=>{
                   const cg=combTotal-needed, cok=cg>=0;
